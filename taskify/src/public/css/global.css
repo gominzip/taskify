@@ -43,7 +43,7 @@ button {
   }
 }
 
-@media (min-width: 600px) {
+@media (min-width: 780px) {
   html {
     font-size: 10px;
   }
