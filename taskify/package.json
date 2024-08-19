@@ -4,7 +4,7 @@
   "description": "boostcamp membership",
   "main": "app.js",
   "scripts": {
-    "start": "nodemon ./bin/www.js",
+    "start": "node server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "j009",
@@ -12,5 +12,10 @@
   "dependencies": {
     "ejs": "^3.1.10",
     "express": "^4.19.2"
+  },
+  "devDependencies": {
+    "browser-sync": "^2.29.3",
+    "browser-sync-webpack-plugin": "^2.3.0",
+    "nodemon": "^3.1.4"
   }
 }
