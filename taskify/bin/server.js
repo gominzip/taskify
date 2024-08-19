@@ -9,15 +9,13 @@ nodemon({
   .on("start", () => {
     if (!browserSync.active) {
       browserSync.init({
-        proxy: "http://localhost:3000", 
-        files: ["src/public/**/*.*", "src/views/**/*.*"], 
+        proxy: "http://localhost:3000",
+        files: ["src/public/**/*.*", "src/views/**/*.*"],
         port: 4000, // BrowserSync가 제공할 포트
         reloadDelay: 1000, // 재시작 후 지연 시간
       });
     }
   })
   .on("restart", () => {
-    setTimeout(() => {
-      browserSync.reload({ stream: false });
-    }, 1000);
+    browserSync.reload({ stream: false });
   });
