@@ -3,11 +3,82 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/css/global.css" />
     <link rel="stylesheet" href="/css/index.css" />
+    <link rel="stylesheet" href="/css/icons.css" />
     <script src="/js/index.js" defer></script>
     <title>Taskify J009</title>
   </head>
   <body>
-    <div>hi</div>
+    <header>
+      <h1>TASKIFY</h1>
+      <button id="history-btn" class="material-symbols-outlined">
+        history
+      </button>
+    </header>
+    <main id="task-board">
+      <!-- 예정된 태스크 컬럼 -->
+      <section class="task-column">
+        <div class="task-column-header">
+          <div class="task-column-title">
+            <span>해야할 일</span>
+            <span class="task-count">0</span>
+          </div>
+          <div class="task-column-controls">
+            <button class="column-add-btn material-symbols-outlined">
+              add
+            </button>
+            <button class="column-remove-btn material-symbols-outlined">
+              close
+            </button>
+          </div>
+        </div>
+        <div class="task-list">
+          <!-- 예정된 태스크 아이템들 -->
+        </div>
+      </section>
+
+      <!-- 진행중인 태스크 컬럼 -->
+      <section class="task-column">
+        <div class="task-column-header">
+          <div class="task-column-title">
+            <span>하고 있는 일</span>
+            <span class="task-count">0</span>
+          </div>
+          <div class="task-column-controls">
+            <button class="column-add-btn material-symbols-outlined">
+              add
+            </button>
+            <button class="column-remove-btn material-symbols-outlined">
+              close
+            </button>
+          </div>
+        </div>
+        <div class="task-list">
+          <!-- 진행중 태스크 아이템들 -->
+        </div>
+      </section>
+
+      <!-- 완료된 태스크 컬럼 -->
+      <section class="task-column">
+        <div class="task-column-header">
+          <div class="task-column-title">
+            <span>완료한 일</span>
+            <span class="task-count">0</span>
+          </div>
+          <div class="task-column-controls">
+            <button class="column-add-btn material-symbols-outlined">
+              add
+            </button>
+            <button class="column-remove-btn material-symbols-outlined">
+              close
+            </button>
+          </div>
+        </div>
+        <div class="task-list">
+          <!-- 완료된 태스크 아이템들 -->
+        </div>
+      </section>
+    </main>
   </body>
 </html>
