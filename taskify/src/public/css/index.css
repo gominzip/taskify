@@ -1,0 +1,66 @@
+@import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined");
+
+header {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+
+  h1 {
+    font-size: 2.4rem;
+    font-weight: 700;
+  }
+}
+
+#task-board {
+  width: 100%;
+  display: flex;
+  gap: 2%;
+}
+
+.task-column {
+  display: flex;
+  flex-direction: column;
+  width: 25%;
+  min-width: 140px;
+}
+
+.task-column-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 0.5rem 0 0.5rem;
+}
+
+.task-column-title {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: #4e4b66;
+  font-size: 1.6rem;
+  font-weight: 600;
+}
+
+.task-count {
+  width: 2.2rem;
+  height: 2.2rem;
+  font-size: 1.2rem;
+  border: 1px solid #eff0f6;
+  border-radius: 35%;
+  color: #a0a3bd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.column-add-btn.material-symbols-outlined {
+  font-size: 2.2rem;
+  color: #a0a3bd;
+}
+.column-remove-btn.material-symbols-outlined {
+  font-size: 2.2rem;
+  color: #a0a3bd;
+}
+.column-remove-btn.material-symbols-outlined:hover {
+  color: #ff3b30;
+}
