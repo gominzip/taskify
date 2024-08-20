@@ -5,6 +5,7 @@ class Task {
     this.title = title;
     this.description = description;
     this.author = author;
+    this.order = order;
     this.createdAt = createdAt || new Date().toISOString();
     this.updatedAt = updatedAt || new Date().toISOString();
   }
