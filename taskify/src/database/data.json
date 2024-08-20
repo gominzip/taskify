@@ -1,0 +1,33 @@
+{
+  "columns": {
+    "1": {
+      "id": "1",
+      "title": "해야할 일",
+      "tasks": ["101", "102"],
+      "createdAt": "2024-08-19T10:00:00Z",
+      "updatedAt": "2024-08-19T10:00:00Z"
+    }
+  },
+  "tasks": {
+    "101": {
+      "id": "101",
+      "title": "태스크 1",
+      "description": "태스크 1 내용",
+      "author": "작성자 1",
+      "columnId": "1",
+      "order": 1,
+      "createdAt": "2024-08-19T10:00:00Z",
+      "updatedAt": "2024-08-19T10:00:00Z"
+    },
+    "102": {
+      "id": "102",
+      "title": "태스크 2",
+      "description": "태스크 2 내용",
+      "author": "작성자 2",
+      "columnId": "1",
+      "order": 2,
+      "createdAt": "2024-08-19T11:00:00Z",
+      "updatedAt": "2024-08-19T11:00:00Z"
+    }
+  }
+}
