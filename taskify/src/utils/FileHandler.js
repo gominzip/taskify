@@ -1,4 +1,4 @@
-import { readFileSync } from "fs";
+import { readFileSync, writeFileSync } from "fs";
 
 class FileHandler {
   static readFile(filePath) {
@@ -6,8 +6,8 @@ class FileHandler {
     return JSON.parse(data);
   }
 
-  static async writeFile(filePath, data) {
-    await fs.writeFile(filePath, JSON.stringify(data, null, 2));
+  static writeFile(filePath, data) {
+    writeFileSync(filePath, JSON.stringify(data, null, 2));
   }
 }
 
