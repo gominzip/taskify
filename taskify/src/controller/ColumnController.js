@@ -1,7 +1,12 @@
 import columnStorage from "../model/ColumnStorage.js";
 
 export const getAllColumns = async (req, res) => {
-  res.render("index");
+  try {
+    const data = await columnStorage.getAllColumnsWithTasks();
+    res.status(200).json({ data });
+  } catch (error) {
+    res.status(500).send("서버 오류");
+  }
 };
 
 export const addColumn = async (req, res) => {
