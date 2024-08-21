@@ -1,6 +1,31 @@
-const fs = require("fs").promises;
-const path = require("path");
+import FileHandler from "../utils/FileHandler.js";
 
-class ColumnStorage {}
+class ColumnStorage {
+  constructor() {
+    this.filePath = "./src/database/data.json";
+  }
 
-module.exports = ColumnStorage;
+  getAllColumnsWithTasks() {
+    try {
+      const data = FileHandler.readFile(this.filePath);
+
+      const columnsWithTasks = Object.values(data.columns).map((column) => {
+        const tasks = column.tasks.map((taskId) => data.tasks[taskId]);
+        return {
+          ...column,
+          tasks,
+        };
+      });
+      return columnsWithTasks;
+    } catch (error) {}
+  }
+
+  addColumn(newColumn) {
+    const data = FileHandler.readFile(this.filePath);
+    console.log(data);
+    data.columns.push(newColumn);
+    FileHandler.writeFile(data);
+  }
+}
+
+export default new ColumnStorage();
