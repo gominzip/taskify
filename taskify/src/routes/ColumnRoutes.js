@@ -1,8 +1,7 @@
-"use strict";
+import express from "express";
+import * as columnController from "../controller/ColumnController.js";
 
-const express = require("express");
 const router = express.Router();
-const columnController = require("../controller/ColumnController");
 
 router.get("/", columnController.getAllColumns);
 
@@ -12,4 +11,4 @@ router.put("/:id", columnController.updateColumn);
 
 router.delete("/:id", columnController.deleteColumn);
 
-module.exports = router;
+export default router;

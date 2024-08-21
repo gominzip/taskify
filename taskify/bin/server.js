@@ -1,5 +1,6 @@
-const browserSync = require("browser-sync").create();
-const nodemon = require("nodemon");
+import BrowserSync from "browser-sync";
+import nodemon from "nodemon";
+const browserSync = BrowserSync.create();
 
 // Nodemon이 서버를 재시작할 때 BrowserSync가 브라우저를 새로 고침
 nodemon({
