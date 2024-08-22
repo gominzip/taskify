@@ -7,7 +7,7 @@ router.get("/", columnController.getAllColumns);
 
 router.post("/", columnController.addColumn);
 
-router.put("/:id", columnController.updateColumn);
+router.post("/:id", columnController.updateColumn);
 
 router.delete("/:id", columnController.deleteColumn);
 

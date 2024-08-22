@@ -6,18 +6,16 @@ class ColumnStorage {
   }
 
   getAllColumnsWithTasks() {
-    try {
-      const data = FileHandler.readFile(this.filePath);
+    const data = FileHandler.readFile(this.filePath);
 
-      const columnsWithTasks = Object.values(data.columns).map((column) => {
-        const tasks = column.tasks.map((taskId) => data.tasks[taskId]);
-        return {
-          ...column,
-          tasks,
-        };
-      });
-      return columnsWithTasks;
-    } catch (error) {}
+    const columnsWithTasks = Object.values(data.columns).map((column) => {
+      const tasks = column.tasks.map((taskId) => data.tasks[taskId]);
+      return {
+        ...column,
+        tasks,
+      };
+    });
+    return columnsWithTasks;
   }
 
   addColumn(newColumn) {
@@ -27,26 +25,34 @@ class ColumnStorage {
     FileHandler.writeFile(this.filePath, data);
   }
 
-  deleteColumn(id) {
-    try {
-      const data = FileHandler.readFile(this.filePath);
+  updateColumn(id, title) {
+    const data = FileHandler.readFile(this.filePath);
 
-      if (!data.columns[id]) {
-        throw new Error(`ID가 '${id}'인 컬럼을 찾을 수 없습니다.`);
-      }
-
-      // 속한 테스크 삭제
-      data.columns[id].tasks.forEach((taskId) => {
-        delete data.tasks[taskId];
-      });
-
-      delete data.columns[id];
-
-      FileHandler.writeFile(this.filePath, data);
-    } catch (error) {
-      console.error("컬럼 삭제 중 오류 발생:", error);
-      throw new Error("컬럼을 삭제하는 중 오류 발생");
+    if (!data.columns[id]) {
+      throw new Error(`ID가 ${id}인 컬럼을 찾을 수 없습니다.`);
     }
+
+    data.columns[id].title = title;
+
+    FileHandler.writeFile(this.filePath, data);
+    return data.columns[id];
+  }
+
+  deleteColumn(id) {
+    const data = FileHandler.readFile(this.filePath);
+
+    if (!data.columns[id]) {
+      throw new Error(`ID가 '${id}'인 컬럼을 찾을 수 없습니다.`);
+    }
+
+    // 속한 테스크 삭제
+    data.columns[id].tasks.forEach((taskId) => {
+      delete data.tasks[taskId];
+    });
+
+    delete data.columns[id];
+
+    FileHandler.writeFile(this.filePath, data);
   }
 }
 

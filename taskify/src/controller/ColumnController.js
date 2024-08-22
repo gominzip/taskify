@@ -26,7 +26,14 @@ export const addColumn = (req, res) => {
 export const updateColumn = async (req, res) => {
   const { id } = req.params;
   const { title } = req.body;
-  res.status(200).json({ id, title });
+
+  try {
+    const data = columnStorage.updateColumn(id, title);
+    res.status(200).json({ data });
+    return;
+  } catch (error) {
+    res.status(404).json({ error: error.message });
+  }
 };
 
 export const deleteColumn = async (req, res) => {
