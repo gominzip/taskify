@@ -31,24 +31,32 @@ class TaskStorage {
 
     data.tasks[newTask.id] = JSON.parse(JSON.stringify(newTask));
     column.tasks.push(newTask.id);
-    
+
     FileHandler.writeFile(this.filePath, data);
   }
 
   deleteTask(id) {
-    try {
-      const data = FileHandler.readFile(this.filePath);
+    const data = FileHandler.readFile(this.filePath);
 
-      if (!data.tasks[id]) {
-        throw new Error(`ID가 '${id}'인 테스크를 찾을 수 없습니다.`);
-      }
-
-      delete data.tasks[id];
-
-      FileHandler.writeFile(this.filePath, data);
-    } catch (error) {
-      throw new Error("컬럼을 삭제하는 중 오류 발생");
+    if (!data.tasks[id]) {
+      throw new Error(`ID가 '${id}'인 테스크를 찾을 수 없습니다.`);
     }
+
+    const taskToDelete = data.tasks[id];
+    const column = data.columns[taskToDelete.columnId];
+
+    delete data.tasks[id];
+
+    column.tasks = column.tasks.filter((taskId) => taskId !== id);
+
+    column.tasks.forEach((taskId) => {
+      const task = data.tasks[taskId];
+      if (task.order > taskToDelete.order) {
+        task.order -= 1;
+      }
+    });
+
+    FileHandler.writeFile(this.filePath, data);
   }
 }
 

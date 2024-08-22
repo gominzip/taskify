@@ -15,9 +15,9 @@ export const addTask = async (req, res) => {
   try {
     taskStorage.addTask(newTask);
     res.status(200).json(newTask);
-    // res.redirect("/");
+    return;
   } catch (error) {
-    res.status(500).send("서버 오류");
+    res.status(404).json({ error: error.message });
   }
 };
 
@@ -29,5 +29,11 @@ export const updateTask = async (req, res) => {
 
 export const deleteTask = async (req, res) => {
   const { id } = req.params;
-  res.status(200).json({ id });
+  try {
+    taskStorage.deleteTask(id);
+    res.status(200).json({ message: `ID가 '${id}'인 테스크가 삭제되었습니다.` });
+    return;
+  } catch (error) {
+    res.status(404).json({ error: error.message });
+  }
 };
