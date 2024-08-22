@@ -22,9 +22,9 @@ class ColumnStorage {
 
   addColumn(newColumn) {
     const data = FileHandler.readFile(this.filePath);
-    console.log(data);
-    data.columns.push(newColumn);
-    FileHandler.writeFile(data);
+    data.columns[newColumn.id] = JSON.parse(JSON.stringify(newColumn));
+
+    FileHandler.writeFile(this.filePath, data);
   }
 }
 

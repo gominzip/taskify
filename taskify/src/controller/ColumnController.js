@@ -12,7 +12,6 @@ export const getAllColumns = (req, res) => {
 
 export const addColumn = (req, res) => {
   const { title } = req.body;
-  // id 설정에 대한 고민... uuid를 사용할지
   const newColumn = new Column(Date.now().toString(), title);
 
   try {
