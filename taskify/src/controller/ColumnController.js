@@ -34,7 +34,8 @@ export const deleteColumn = async (req, res) => {
 
   try {
     columnStorage.deleteColumn(id);
-    // res.redirect("/");
+    res.status(200).json({ message: `ID가 '${id}'인 컬럼이 삭제되었습니다.` });
+    return;
   } catch (error) {
     res.status(404).json({ error: error.message });
   }
