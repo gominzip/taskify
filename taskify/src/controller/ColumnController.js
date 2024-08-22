@@ -31,5 +31,13 @@ export const updateColumn = async (req, res) => {
 
 export const deleteColumn = async (req, res) => {
   const { id } = req.params;
+
+  try {
+    columnStorage.deleteColumn(id);
+    // res.redirect("/");
+  } catch (error) {
+    res.status(404).json({ error: error.message });
+  }
+
   res.status(200).json({ id });
 };

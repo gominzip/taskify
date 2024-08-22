@@ -26,6 +26,22 @@ class ColumnStorage {
 
     FileHandler.writeFile(this.filePath, data);
   }
+
+  deleteColumn(id) {
+    try {
+      const data = FileHandler.readFile(this.filePath);
+
+      if (!data.columns[id]) {
+        throw new Error(`ID가 '${id}'인 컬럼을 찾을 수 없습니다.`);
+      }
+
+      delete data.columns[id];
+
+      FileHandler.writeFile(this.filePath, data);
+    } catch (error) {
+      throw new Error("컬럼을 삭제하는 중 오류 발생");
+    }
+  }
 }
 
 export default new ColumnStorage();
