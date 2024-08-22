@@ -3,10 +3,6 @@ import * as columnController from "../controller/ColumnController.js";
 
 const router = express.Router();
 
-router.post("/", columnController.addColumn);
-
-router.post("/:id", columnController.updateColumn);
-
-router.delete("/:id", columnController.deleteColumn);
+router.get("/", columnController.getAllColumns);
 
 export default router;

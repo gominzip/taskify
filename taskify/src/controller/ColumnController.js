@@ -12,7 +12,6 @@ export const getAllColumns = (req, res) => {
 
 export const addColumn = (req, res) => {
   const { title } = req.body;
-  // id 설정에 대한 고민... uuid를 사용할지
   const newColumn = new Column(Date.now().toString(), title);
 
   try {
@@ -27,10 +26,26 @@ export const addColumn = (req, res) => {
 export const updateColumn = async (req, res) => {
   const { id } = req.params;
   const { title } = req.body;
-  res.status(200).json({ id, title });
+
+  try {
+    const data = columnStorage.updateColumn(id, title);
+    res.status(200).json({ data });
+    return;
+  } catch (error) {
+    res.status(404).json({ error: error.message });
+  }
 };
 
 export const deleteColumn = async (req, res) => {
   const { id } = req.params;
+
+  try {
+    columnStorage.deleteColumn(id);
+    res.status(200).json({ message: `ID가 '${id}'인 컬럼이 삭제되었습니다.` });
+    return;
+  } catch (error) {
+    res.status(404).json({ error: error.message });
+  }
+
   res.status(200).json({ id });
 };

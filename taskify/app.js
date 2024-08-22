@@ -1,6 +1,7 @@
 import express from "express";
 import columnRoutes from "./src/routes/ColumnRoutes.js";
 import taskRoutes from "./src/routes/TaskRoutes.js";
+import mainRoutes from "./src/routes/index.js";
 
 const app = express();
 
@@ -12,7 +13,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(`./src/public`));
 
-app.use("/", columnRoutes);
-app.use("/tasks", taskRoutes);
+app.use("/column", columnRoutes);
+app.use("/task", taskRoutes);
+app.use("/", mainRoutes);
 
 export default app;
