@@ -1,5 +1,14 @@
 class Task {
-  constructor(id, columnId, title, description, author, createdAt, updatedAt) {
+  constructor(
+    id,
+    columnId,
+    title,
+    description,
+    author,
+    order,
+    createdAt,
+    updatedAt
+  ) {
     this.id = id;
     this.columnId = columnId;
     this.title = title;

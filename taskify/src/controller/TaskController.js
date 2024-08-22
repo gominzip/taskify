@@ -1,6 +1,24 @@
+import Task from "../model/Task.js";
+import taskStorage from "../model/TaskStorage.js";
+
 export const addTask = async (req, res) => {
-  const { columnId, title, description, author, order } = req.body;
-  res.status(200).json({ columnId, title, description, author, order });
+  const { columnId, title, description, author } = req.body;
+  const newTask = new Task(
+    Date.now().toString(),
+    columnId,
+    title,
+    description,
+    author,
+    0 // 추가된 컬럼의 우선순위는 가장 위
+  );
+
+  try {
+    taskStorage.addTask(newTask);
+    res.status(200).json(newTask);
+    // res.redirect("/");
+  } catch (error) {
+    res.status(500).send("서버 오류");
+  }
 };
 
 export const updateTask = async (req, res) => {
