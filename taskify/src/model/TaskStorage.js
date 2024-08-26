@@ -2,46 +2,8 @@ import { pool } from "../config/db.js";
 import FileHandler from "../utils/FileHandler.js";
 
 class TaskStorage {
-  constructor() {
-    this.filePath = "./src/database/data.json";
-  }
-
-  #getData() {
-    return FileHandler.readFile(this.filePath);
-  }
-
-  #writeData(data) {
-    FileHandler.writeFile(this.filePath, data);
-  }
-
-  #updateTaskOrders(columnTasks, oldOrder, newOrder, data) {
-    columnTasks.forEach((taskId) => {
-      const task = data.tasks[taskId];
-      if (oldOrder === -1) {
-        // 새로 추가된 경우
-        task.task_order += 1;
-      } else if (newOrder > oldOrder) {
-        if (task.task_order >= oldOrder + 1 && task.task_order <= newOrder) {
-          task.task_order -= 1;
-        }
-      } else if (newOrder < oldOrder) {
-        if (task.task_order >= newOrder && task.task_order < oldOrder) {
-          task.task_order += 1;
-        }
-      }
-    });
-  }
-
-  async getTask(id) {
-    const [rows] = await pool.query("SELECT * FROM tasks WHERE id = ?", [id]);
-
-    if (rows.length === 0) {
-      throw new Error(`ID가 '${id}'인 테스크를 찾을 수 없습니다.`);
-    }
-
-    return rows[0];
-  }
-
+  constructor() {}
+  /** 테스크 추가 */
   async addTask(newTask) {
     const { columnId, title, description, authorId } = newTask;
 
@@ -61,112 +23,119 @@ class TaskStorage {
     );
 
     const newTaskId = result.insertId;
-    return this.getTask(newTaskId);
+    return this.#getTask(newTaskId);
   }
 
-  /**
-   * Task의 변경사항을 Mock 데이터에 반영하는 메서드 입니다...
-   * 로직은 제대로 동작하는데 가독성이랑 중복되는 코드들이 있어서 개선 예정입니다
-   */
-  updateTask(id, updates) {
-    const data = this.#getData();
-    const task = data.tasks[id];
+  /** 테스크 삭제 */
+  async deleteTask(id) {
+    const [taskRows] = await pool.query("SELECT * FROM tasks WHERE id = ?", [
+      id,
+    ]);
 
-    if (!task) {
+    if (taskRows.length === 0) {
       throw new Error(`ID가 '${id}'인 테스크를 찾을 수 없습니다.`);
     }
 
-    // 컬럼 변경 시
-    if (updates.columnId && updates.columnId !== task.columnId) {
-      const newColumnId = updates.columnId;
-
-      // 새로운 컬럼이 존재하는지 확인
-      if (!data.columns[newColumnId]) {
-        throw new Error(`ID가 '${newColumnId}'인 컬럼을 찾을 수 없습니다.`);
-      }
-
-      const oldColumn = data.columns[task.columnId];
-      const newColumn = data.columns[newColumnId];
-      const oldOrder = task.task_order;
-
-      task.columnId = newColumnId;
-      task.task_order = updates.task_order ?? newColumn.tasks.length; // 새로운 컬럼에서의 순서
-
-      // 이전 컬럼에서 테스크 제거
-      oldColumn.tasks = oldColumn.tasks.filter((taskId) => taskId !== id);
-
-      // 기존 컬럼의 테스크 순서를 업데이트
-      this.#updateTaskOrders(
-        oldColumn.tasks,
-        oldOrder,
-        oldColumn.tasks.length,
-        data
-      );
-
-      // 새로운 칼럼 업데이트
-      // 우선 현재 task를 0번째에 추가함 -> 기존 task들의 우선순위 +1됨
-      this.#updateTaskOrders(newColumn.tasks, -1, 0, data);
-      // tasks에 현재 task를 추가하고
-      newColumn.tasks.push(id);
-      // 0번째에서 입력된 위치로 order를 변경해줌
-      this.#updateTaskOrders(newColumn.tasks, 0, task.task_order, data);
-
-      const { columnId, ...restUpdates } = updates; // 나머지 업데이트 사항 적용
-      updates = restUpdates;
-    }
-
+    const task = taskRows[0];
     const columnId = task.columnId;
-    const columnTasks = data.columns[columnId].tasks;
+    const taskOrder = task.task_order;
 
-    let oldOrder = task.task_order;
+    await pool.query("DELETE FROM tasks WHERE id = ?", [id]);
 
-    if (updates.task_order !== undefined) {
-      const newOrder = Number(updates.task_order);
-      // order 값 검증
-      if (isNaN(newOrder) || newOrder < 0 || newOrder >= columnTasks.length) {
-        throw new Error(`유효하지 않은 order 값입니다: ${updates.task_order}`);
-      }
-
-      this.#updateTaskOrders(columnTasks, oldOrder, newOrder, data);
-
-      task.task_order = newOrder;
-      updates.task_order = newOrder;
-    }
-
-    const updatedTask = {
-      ...task,
-      ...updates,
-      updatedAt: new Date().toISOString(),
-    };
-
-    data.tasks[id] = updatedTask;
-    this.#writeData(data);
-
-    return updatedTask;
+    // 컬럼 내 우선순위 조정
+    await pool.query(
+      "UPDATE tasks SET task_order = task_order - 1 WHERE columnId = ? AND task_order > ?",
+      [columnId, taskOrder]
+    );
   }
 
-  deleteTask(id) {
-    const data = this.#getData();
+  /** 테스크 업데이트 */
+  async updateTask(id, updates) {
+    const { columnId, task_order, title, description } = updates;
 
-    if (!data.tasks[id]) {
+    const currentTask = await this.#getTask(id);
+
+    if (!currentTask) {
       throw new Error(`ID가 '${id}'인 테스크를 찾을 수 없습니다.`);
     }
 
-    const taskToDelete = data.tasks[id];
-    const column = data.columns[taskToDelete.columnId];
+    const oldColumnId = currentTask.columnId;
+    const oldOrder = currentTask.task_order;
 
-    delete data.tasks[id];
+    if (columnId && oldColumnId !== columnId) {
+      await this.#updateOrderInOldColumn(oldColumnId, oldOrder);
+      await this.#updateOrderInNewColumn(columnId, task_order);
+      await this.#updateTask(
+        id,
+        columnId,
+        task_order ?? oldOrder,
+        title,
+        description
+      );
+    } else {
+      if (task_order !== undefined && task_order !== oldOrder) {
+        await this.#updateOrderInColumn(oldColumnId, oldOrder, task_order);
+        await this.#updateTask(id, oldColumnId, task_order, title, description);
+      } else {
+        await this.#updateTask(id, oldColumnId, oldOrder, title, description);
+      }
+    }
 
-    column.tasks = column.tasks.filter((taskId) => taskId !== id);
+    return this.#getTask(id);
+  }
 
-    this.#updateTaskOrders(
-      column.tasks,
-      taskToDelete.task_order,
-      column.tasks.length,
-      data
+  async #getTask(id) {
+    const [rows] = await pool.query("SELECT * FROM tasks WHERE id = ?", [id]);
+    if (rows.length === 0) {
+      throw new Error(`ID가 '${id}'인 테스크를 찾을 수 없습니다.`);
+    }
+
+    return rows[0];
+  }
+
+  /** 이전 컬럼에서 우선순위 조정 */
+  async #updateOrderInOldColumn(columnId, oldOrder) {
+    await pool.query(
+      "UPDATE tasks SET task_order = task_order - 1 WHERE columnId = ? AND task_order > ?",
+      [columnId, oldOrder]
     );
+  }
 
-    this.#writeData(data);
+  /** 새 컬럼에서 우선순위 조정 */
+  async #updateOrderInNewColumn(columnId, newOrder) {
+    if (newOrder === undefined) {
+      return;
+    }
+    await pool.query(
+      "UPDATE tasks SET task_order = task_order + 1 WHERE columnId = ? AND task_order >= ?",
+      [columnId, newOrder]
+    );
+  }
+
+  /** 컬럼 내부에서 우선순위 조정 */
+  async #updateOrderInColumn(columnId, oldOrder, newOrder) {
+    if (newOrder === undefined) {
+      return;
+    }
+    if (newOrder > oldOrder) {
+      await pool.query(
+        "UPDATE tasks SET task_order = task_order - 1 WHERE columnId = ? AND task_order > ? AND task_order <= ?",
+        [columnId, oldOrder, newOrder]
+      );
+    } else {
+      await pool.query(
+        "UPDATE tasks SET task_order = task_order + 1 WHERE columnId = ? AND task_order >= ? AND task_order < ?",
+        [columnId, newOrder, oldOrder]
+      );
+    }
+  }
+
+  /** 테스크 업데이트 */
+  async #updateTask(taskId, columnId, taskOrder, title, description) {
+    await pool.query(
+      "UPDATE tasks SET columnId = ?, task_order = ?, title = COALESCE(?, title), description = COALESCE(?, description), updatedAt = NOW() WHERE id = ?",
+      [columnId, taskOrder, title, description, taskId]
+    );
   }
 }
 
