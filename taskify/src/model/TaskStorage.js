@@ -1,3 +1,4 @@
+import { pool } from "../config/db.js";
 import FileHandler from "../utils/FileHandler.js";
 
 class TaskStorage {
@@ -31,25 +32,36 @@ class TaskStorage {
     });
   }
 
-  getTask(id) {
-    const data = this.#getData();
+  async getTask(id) {
+    const [rows] = await pool.query("SELECT * FROM tasks WHERE id = ?", [id]);
 
-    if (!data.tasks[id]) {
+    if (rows.length === 0) {
       throw new Error(`ID가 '${id}'인 테스크를 찾을 수 없습니다.`);
     }
 
-    return data.tasks[id];
+    return rows[0];
   }
 
-  addTask(newTask) {
-    const data = this.#getData();
-    const column = data.columns[newTask.columnId];
+  async addTask(newTask) {
+    const { columnId, title, description, authorId } = newTask;
 
-    data.tasks[newTask.id] = { ...newTask };
-    this.#updateTaskOrders(column.tasks, -1, newTask.task_order, data);
-    column.tasks.push(newTask.id);
+    // 같은 컬럼의 테스크 가져오기
+    const [tasksRows] = await pool.query(
+      "SELECT task_order FROM tasks WHERE columnId = ?",
+      [columnId]
+    );
+    let highestOrder = 0;
+    if (tasksRows.length > 0) {
+      highestOrder = Math.max(...tasksRows.map((task) => task.task_order));
+    }
 
-    this.#writeData(data);
+    const [result] = await pool.query(
+      "INSERT INTO tasks (columnId, title, description, authorId, task_order, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, NOW(), NOW())",
+      [columnId, title, description, authorId, highestOrder + 1]
+    );
+
+    const newTaskId = result.insertId;
+    return this.getTask(newTaskId);
   }
 
   /**

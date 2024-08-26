@@ -1,21 +1,11 @@
-import Task from "../model/Task.js";
 import taskStorage from "../model/TaskStorage.js";
 
 export const addTask = async (req, res) => {
-  const { columnId, title, description, authorId } = req.body;
-  const newTask = new Task(
-    Date.now().toString(),
-    columnId,
-    title,
-    description,
-    authorId,
-    0 // 추가된 컬럼의 우선순위는 가장 위
-  );
+  const newTask = req.body;
 
   try {
-    taskStorage.addTask(newTask);
-    res.status(200).json(newTask);
-    return;
+    const addedTask = await taskStorage.addTask(newTask);
+    res.status(200).json(addedTask);
   } catch (error) {
     res.status(404).json({ error: error.message });
   }
