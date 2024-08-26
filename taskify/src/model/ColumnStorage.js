@@ -6,16 +6,22 @@ class ColumnStorage {
     this.filePath = "./src/database/data.json";
   }
 
-  getAllColumnsWithTasks() {
-    const data = FileHandler.readFile(this.filePath);
+  async getAllColumnsWithTasks() {
+    const [rows] = await pool.query("SELECT * FROM columns");
 
-    const columnsWithTasks = Object.values(data.columns).map((column) => {
-      const tasks = column.tasks.map((taskId) => data.tasks[taskId]);
-      return {
-        ...column,
-        tasks,
-      };
-    });
+    const columnsWithTasks = await Promise.all(
+      rows.map(async (column) => {
+        const [tasks] = await pool.query(
+          "SELECT * FROM tasks WHERE columnId = ?",
+          [column.id]
+        );
+        return {
+          ...column,
+          tasks,
+        };
+      })
+    );
+
     return columnsWithTasks;
   }
 

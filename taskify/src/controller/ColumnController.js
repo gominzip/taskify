@@ -1,12 +1,12 @@
 import Column from "../model/Column.js";
 import columnStorage from "../model/ColumnStorage.js";
 
-export const getAllColumns = (req, res) => {
+export const getAllColumns = async (req, res) => {
   try {
-    const data = columnStorage.getAllColumnsWithTasks();
+    const data = await columnStorage.getAllColumnsWithTasks();
     res.status(200).json({ data });
   } catch (error) {
-    res.status(500).send("서버 오류");
+    res.status(404).json({ error: error.message });
   }
 };
 
@@ -17,8 +17,7 @@ export const addColumn = async (req, res) => {
     const column = await columnStorage.addColumn(title);
     res.status(200).json(column);
   } catch (error) {
-    console.log(error);
-    res.status(500).send("서버 오류");
+    res.status(404).json({ error: error.message });
   }
 };
 
