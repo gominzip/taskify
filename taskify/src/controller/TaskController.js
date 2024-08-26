@@ -2,13 +2,13 @@ import Task from "../model/Task.js";
 import taskStorage from "../model/TaskStorage.js";
 
 export const addTask = async (req, res) => {
-  const { columnId, title, description, author } = req.body;
+  const { columnId, title, description, authorId } = req.body;
   const newTask = new Task(
     Date.now().toString(),
     columnId,
     title,
     description,
-    author,
+    authorId,
     0 // 추가된 컬럼의 우선순위는 가장 위
   );
 

@@ -4,7 +4,7 @@ class Task {
     columnId,
     title,
     description,
-    author,
+    authorId,
     order,
     createdAt,
     updatedAt
@@ -13,7 +13,7 @@ class Task {
     this.columnId = columnId;
     this.title = title;
     this.description = description;
-    this.author = author;
+    this.authorId = authorId;
     this.order = order;
     this.createdAt = createdAt || new Date().toISOString();
     this.updatedAt = updatedAt || new Date().toISOString();
