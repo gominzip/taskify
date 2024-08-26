@@ -10,15 +10,14 @@ export const getAllColumns = (req, res) => {
   }
 };
 
-export const addColumn = (req, res) => {
+export const addColumn = async (req, res) => {
   const { title } = req.body;
-  const newColumn = new Column(Date.now().toString(), title);
 
   try {
-    columnStorage.addColumn(newColumn);
-    res.status(200).json(newColumn);
-    // res.redirect("/");
+    const column = await columnStorage.addColumn(title);
+    res.status(200).json(column);
   } catch (error) {
+    console.log(error);
     res.status(500).send("서버 오류");
   }
 };
@@ -28,8 +27,8 @@ export const updateColumn = async (req, res) => {
   const { title } = req.body;
 
   try {
-    const data = columnStorage.updateColumn(id, title);
-    res.status(200).json({ data });
+    const updatedColumn = await columnStorage.updateColumn(id, title);
+    res.status(200).json(updatedColumn);
     return;
   } catch (error) {
     res.status(404).json({ error: error.message });

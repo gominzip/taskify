@@ -1,3 +1,4 @@
+import { pool } from "../config/db.js";
 import FileHandler from "../utils/FileHandler.js";
 
 class ColumnStorage {
@@ -18,24 +19,33 @@ class ColumnStorage {
     return columnsWithTasks;
   }
 
-  addColumn(newColumn) {
-    const data = FileHandler.readFile(this.filePath);
-    data.columns[newColumn.id] = JSON.parse(JSON.stringify(newColumn));
+  async addColumn(title) {
+    const [result] = await pool.query(
+      "INSERT INTO columns (title) VALUES (?)",
+      [title]
+    );
 
-    FileHandler.writeFile(this.filePath, data);
+    const [newColumn] = await pool.query("SELECT * FROM columns WHERE id = ?", [
+      result.insertId,
+    ]);
+    return newColumn[0];
   }
 
-  updateColumn(id, title) {
-    const data = FileHandler.readFile(this.filePath);
+  async updateColumn(id, title) {
+    const [result] = await pool.query(
+      "UPDATE columns SET title = ? WHERE id = ?",
+      [title, id]
+    );
 
-    if (!data.columns[id]) {
+    if (result.affectedRows === 0) {
       throw new Error(`ID가 ${id}인 컬럼을 찾을 수 없습니다.`);
     }
 
-    data.columns[id].title = title;
-
-    FileHandler.writeFile(this.filePath, data);
-    return data.columns[id];
+    const [updatedColumn] = await pool.query(
+      "SELECT * FROM columns WHERE id = ?",
+      [id]
+    );
+    return updatedColumn[0];
   }
 
   deleteColumn(id) {
