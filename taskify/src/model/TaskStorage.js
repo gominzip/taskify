@@ -18,14 +18,14 @@ class TaskStorage {
       const task = data.tasks[taskId];
       if (oldOrder === -1) {
         // 새로 추가된 경우
-        task.order += 1;
+        task.task_order += 1;
       } else if (newOrder > oldOrder) {
-        if (task.order >= oldOrder + 1 && task.order <= newOrder) {
-          task.order -= 1;
+        if (task.task_order >= oldOrder + 1 && task.task_order <= newOrder) {
+          task.task_order -= 1;
         }
       } else if (newOrder < oldOrder) {
-        if (task.order >= newOrder && task.order < oldOrder) {
-          task.order += 1;
+        if (task.task_order >= newOrder && task.task_order < oldOrder) {
+          task.task_order += 1;
         }
       }
     });
@@ -46,7 +46,7 @@ class TaskStorage {
     const column = data.columns[newTask.columnId];
 
     data.tasks[newTask.id] = { ...newTask };
-    this.#updateTaskOrders(column.tasks, -1, newTask.order, data);
+    this.#updateTaskOrders(column.tasks, -1, newTask.task_order, data);
     column.tasks.push(newTask.id);
 
     this.#writeData(data);
@@ -75,10 +75,10 @@ class TaskStorage {
 
       const oldColumn = data.columns[task.columnId];
       const newColumn = data.columns[newColumnId];
-      const oldOrder = task.order;
+      const oldOrder = task.task_order;
 
       task.columnId = newColumnId;
-      task.order = updates.order ?? newColumn.tasks.length; // 새로운 컬럼에서의 순서
+      task.task_order = updates.task_order ?? newColumn.tasks.length; // 새로운 컬럼에서의 순서
 
       // 이전 컬럼에서 테스크 제거
       oldColumn.tasks = oldColumn.tasks.filter((taskId) => taskId !== id);
@@ -97,7 +97,7 @@ class TaskStorage {
       // tasks에 현재 task를 추가하고
       newColumn.tasks.push(id);
       // 0번째에서 입력된 위치로 order를 변경해줌
-      this.#updateTaskOrders(newColumn.tasks, 0, task.order, data);
+      this.#updateTaskOrders(newColumn.tasks, 0, task.task_order, data);
 
       const { columnId, ...restUpdates } = updates; // 나머지 업데이트 사항 적용
       updates = restUpdates;
@@ -106,19 +106,19 @@ class TaskStorage {
     const columnId = task.columnId;
     const columnTasks = data.columns[columnId].tasks;
 
-    let oldOrder = task.order;
+    let oldOrder = task.task_order;
 
-    if (updates.order !== undefined) {
-      const newOrder = Number(updates.order);
+    if (updates.task_order !== undefined) {
+      const newOrder = Number(updates.task_order);
       // order 값 검증
       if (isNaN(newOrder) || newOrder < 0 || newOrder >= columnTasks.length) {
-        throw new Error(`유효하지 않은 order 값입니다: ${updates.order}`);
+        throw new Error(`유효하지 않은 order 값입니다: ${updates.task_order}`);
       }
 
       this.#updateTaskOrders(columnTasks, oldOrder, newOrder, data);
 
-      task.order = newOrder;
-      updates.order = newOrder;
+      task.task_order = newOrder;
+      updates.task_order = newOrder;
     }
 
     const updatedTask = {
@@ -149,7 +149,7 @@ class TaskStorage {
 
     this.#updateTaskOrders(
       column.tasks,
-      taskToDelete.order,
+      taskToDelete.task_order,
       column.tasks.length,
       data
     );

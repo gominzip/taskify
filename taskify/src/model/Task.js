@@ -5,7 +5,7 @@ class Task {
     title,
     description,
     authorId,
-    order,
+    task_order,
     createdAt,
     updatedAt
   ) {
@@ -14,7 +14,7 @@ class Task {
     this.title = title;
     this.description = description;
     this.authorId = authorId;
-    this.order = order;
+    this.task_order = task_order;
     this.createdAt = createdAt || new Date().toISOString();
     this.updatedAt = updatedAt || new Date().toISOString();
   }
