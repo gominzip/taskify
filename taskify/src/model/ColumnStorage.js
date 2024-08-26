@@ -1,3 +1,4 @@
+import { pool } from "../config/db.js";
 import FileHandler from "../utils/FileHandler.js";
 
 class ColumnStorage {
@@ -5,54 +6,70 @@ class ColumnStorage {
     this.filePath = "./src/database/data.json";
   }
 
-  getAllColumnsWithTasks() {
-    const data = FileHandler.readFile(this.filePath);
+  async getAllColumnsWithTasks() {
+    const [rows] = await pool.query("SELECT * FROM columns");
 
-    const columnsWithTasks = Object.values(data.columns).map((column) => {
-      const tasks = column.tasks.map((taskId) => data.tasks[taskId]);
-      return {
-        ...column,
-        tasks,
-      };
-    });
+    const columnsWithTasks = await Promise.all(
+      rows.map(async (column) => {
+        const [tasks] = await pool.query(
+          "SELECT * FROM tasks WHERE columnId = ?",
+          [column.id]
+        );
+        return {
+          ...column,
+          tasks,
+        };
+      })
+    );
+
     return columnsWithTasks;
   }
 
-  addColumn(newColumn) {
-    const data = FileHandler.readFile(this.filePath);
-    data.columns[newColumn.id] = JSON.parse(JSON.stringify(newColumn));
+  async addColumn(title) {
+    const [result] = await pool.query(
+      "INSERT INTO columns (title) VALUES (?)",
+      [title]
+    );
 
-    FileHandler.writeFile(this.filePath, data);
+    const [newColumn] = await pool.query("SELECT * FROM columns WHERE id = ?", [
+      result.insertId,
+    ]);
+    return newColumn[0];
   }
 
-  updateColumn(id, title) {
-    const data = FileHandler.readFile(this.filePath);
+  async updateColumn(id, title) {
+    const [result] = await pool.query(
+      "UPDATE columns SET title = ? WHERE id = ?",
+      [title, id]
+    );
 
-    if (!data.columns[id]) {
+    if (result.affectedRows === 0) {
       throw new Error(`ID가 ${id}인 컬럼을 찾을 수 없습니다.`);
     }
 
-    data.columns[id].title = title;
-
-    FileHandler.writeFile(this.filePath, data);
-    return data.columns[id];
+    const [updatedColumn] = await pool.query(
+      "SELECT * FROM columns WHERE id = ?",
+      [id]
+    );
+    return updatedColumn[0];
   }
 
-  deleteColumn(id) {
-    const data = FileHandler.readFile(this.filePath);
+  async deleteColumn(id) {
+    const [tasksRows] = await pool.query(
+      "SELECT id FROM tasks WHERE columnId = ?",
+      [id]
+    );
 
-    if (!data.columns[id]) {
+    if (tasksRows.length === 0) {
       throw new Error(`ID가 '${id}'인 컬럼을 찾을 수 없습니다.`);
     }
+    
+    const taskIds = tasksRows.map((task) => task.id);
+    if (taskIds.length > 0) {
+      await pool.query("DELETE FROM tasks WHERE id IN (?)", [taskIds]);
+    }
 
-    // 속한 테스크 삭제
-    data.columns[id].tasks.forEach((taskId) => {
-      delete data.tasks[taskId];
-    });
-
-    delete data.columns[id];
-
-    FileHandler.writeFile(this.filePath, data);
+    await pool.query("DELETE FROM columns WHERE id = ?", [id]);
   }
 }
 

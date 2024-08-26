@@ -5,7 +5,7 @@ const router = express.Router();
 
 router.post("/", columnController.addColumn);
 
-router.post("/:id", columnController.updateColumn);
+router.patch("/:id", columnController.updateColumn);
 
 router.delete("/:id", columnController.deleteColumn);
 

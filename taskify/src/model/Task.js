@@ -1,22 +1,10 @@
 class Task {
-  constructor(
-    id,
-    columnId,
-    title,
-    description,
-    author,
-    order,
-    createdAt,
-    updatedAt
-  ) {
-    this.id = id;
+  constructor(columnId, title, description, authorId, task_order) {
     this.columnId = columnId;
     this.title = title;
     this.description = description;
-    this.author = author;
-    this.order = order;
-    this.createdAt = createdAt || new Date().toISOString();
-    this.updatedAt = updatedAt || new Date().toISOString();
+    this.authorId = authorId;
+    this.task_order = task_order;
   }
 }
 
