@@ -54,21 +54,22 @@ class ColumnStorage {
     return updatedColumn[0];
   }
 
-  deleteColumn(id) {
-    const data = FileHandler.readFile(this.filePath);
+  async deleteColumn(id) {
+    const [tasksRows] = await pool.query(
+      "SELECT id FROM tasks WHERE columnId = ?",
+      [id]
+    );
 
-    if (!data.columns[id]) {
+    if (tasksRows.length === 0) {
       throw new Error(`ID가 '${id}'인 컬럼을 찾을 수 없습니다.`);
     }
+    
+    const taskIds = tasksRows.map((task) => task.id);
+    if (taskIds.length > 0) {
+      await pool.query("DELETE FROM tasks WHERE id IN (?)", [taskIds]);
+    }
 
-    // 속한 테스크 삭제
-    data.columns[id].tasks.forEach((taskId) => {
-      delete data.tasks[taskId];
-    });
-
-    delete data.columns[id];
-
-    FileHandler.writeFile(this.filePath, data);
+    await pool.query("DELETE FROM columns WHERE id = ?", [id]);
   }
 }
 
