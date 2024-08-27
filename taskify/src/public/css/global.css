@@ -16,7 +16,7 @@ html::-webkit-scrollbar {
   display: none;
 }
 
-body {
+body, #app {
   display: flex;
   flex-direction: column;
   align-items: center;
