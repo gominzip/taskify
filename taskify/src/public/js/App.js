@@ -40,6 +40,7 @@ export default class App extends Component {
                     <div class="task-item">
                       <h4>${title}</h4>
                       <p>${description}</p>
+                      <p>author by web</p>
                     </div>
                   `
                   )
