@@ -15,9 +15,26 @@ class ColumnStorage {
           "SELECT * FROM tasks WHERE columnId = ?",
           [column.id]
         );
+
+        const tasksWithUserNames = await Promise.all(
+          // 테스크의 authorId를 기준으로 이름 찾기
+          tasks.map(async (task) => {
+            const [users] = await pool.query(
+              "SELECT name FROM users WHERE id = ?",
+              [task.authorId]
+            );
+
+            const userName = users.length > 0 ? users[0].name : "Unknown";
+            return {
+              ...task,
+              userName,
+            };
+          })
+        );
+
         return {
           ...column,
-          tasks,
+          tasks: tasksWithUserNames,
         };
       })
     );
@@ -63,7 +80,7 @@ class ColumnStorage {
     if (tasksRows.length === 0) {
       throw new Error(`ID가 '${id}'인 컬럼을 찾을 수 없습니다.`);
     }
-    
+
     const taskIds = tasksRows.map((task) => task.id);
     if (taskIds.length > 0) {
       await pool.query("DELETE FROM tasks WHERE id IN (?)", [taskIds]);
