@@ -37,8 +37,7 @@ export default class App extends Component {
     $taskBoard.innerHTML = "";
 
     columns.forEach((column) => {
-      const $columnContainer = document.createElement("section");
-      $columnContainer.className = 'task-column';
+      const $columnContainer = document.createElement("div");
       $columnContainer.dataset.component = `TaskColumn-${column.id}`;
       $taskBoard.appendChild($columnContainer);
 

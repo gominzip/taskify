@@ -6,6 +6,7 @@ export default class Column extends Component {
     const { title, tasks } = this.props;
     console.log("$taskList:", tasks);
     return `
+      <section class="task-column">
         <div class="task-column-header">
           <div class="task-column-title">
             <span>${title}</span>
@@ -18,6 +19,7 @@ export default class Column extends Component {
         </div>
         <div class="task-list" data-component="task-list">
         </div>
+      </section>
     `;
   }
 
@@ -37,7 +39,6 @@ export default class Column extends Component {
 
     tasks.forEach((task) => {
       const $taskContainer = document.createElement("div");
-      $taskContainer.className = "task-item";
       $taskList.appendChild($taskContainer);
 
       new Task($taskContainer, task);
