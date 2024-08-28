@@ -4,7 +4,7 @@ import Task from "./Task.js";
 export default class Column extends Component {
   template() {
     const { title, tasks } = this.props;
-    console.log("$taskList:", tasks);
+    // console.log("$taskList:", tasks);
     return `
       <section class="task-column">
         <div class="task-column-header">
@@ -25,6 +25,14 @@ export default class Column extends Component {
 
   mounted() {
     this.renderTasks();
+    this.addEvent("click", ".column-add-btn", () => {
+      const newTask = {
+        title: "새로운 테스크 생성",
+        description: "입력은 아직 안받아여",
+        authorId: 1,
+      };
+      this.props.addTask(this.props.columnId, newTask);
+    });
   }
 
   renderTasks() {

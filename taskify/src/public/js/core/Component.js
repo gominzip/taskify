@@ -21,10 +21,7 @@ export default class Component {
 
   render() {
     this.$target.innerHTML = this.template();
-    if (!this.isMounted) {
-      this.mounted();
-      this.isMounted = true;
-    }
+    this.mounted();
   }
 
   setEvent() {}

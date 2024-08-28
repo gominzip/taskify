@@ -21,9 +21,8 @@ export default class App extends Component {
   }
 
   async mounted() {
+    console.log("마운트 되었음");
     const fetchedColumns = await fetchData();
-    console.log(fetchedColumns);
-
     this.setState({
       columns: fetchedColumns,
     });
@@ -44,8 +43,49 @@ export default class App extends Component {
       new Column($columnContainer, {
         title: column.title,
         tasks: column.tasks,
+        columnId: column.id,
+        addTask: this.addTask.bind(this), // 자식에게 메서드 전달
+        deleteTask: this.deleteTask.bind(this),
       });
     });
+  }
+
+  async addTask(columnId, task) {
+    try {
+      const response = await fetch(`/task`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ columnId, ...task }),
+      });
+      if (response.ok) {
+        const newTask = await response.json();
+        this.setState({
+          columns: this.state.columns.map((col) =>
+            col.id === columnId
+              ? { ...col, tasks: [...col.tasks, newTask] }
+              : col
+          ),
+        });
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async deleteTask(taskId) {
+    try {
+      const response = await fetch(`/task/${taskId}`, { method: "DELETE" });
+      if (response.ok) {
+        this.setState({
+          columns: this.state.columns.map((col) => ({
+            ...col,
+            tasks: col.tasks.filter((task) => task.id !== taskId),
+          })),
+        });
+      }
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   setEvent() {
