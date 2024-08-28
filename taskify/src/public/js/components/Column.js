@@ -40,7 +40,6 @@ export default class Column extends Component {
     const $taskList = this.$target.querySelector(
       '[data-component="task-list"]'
     );
-
     $taskList.innerHTML = "";
 
     const { tasks } = this.props;
@@ -49,7 +48,10 @@ export default class Column extends Component {
       const $taskContainer = document.createElement("div");
       $taskList.appendChild($taskContainer);
 
-      new Task($taskContainer, task);
+      new Task($taskContainer, {
+        ...task,
+        deleteTask: this.props.deleteTask,
+      });
     });
   }
 }
