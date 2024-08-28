@@ -1,3 +1,4 @@
+import Column from "./components/Column.js";
 import Component from "./core/Component.js";
 
 export default class App extends Component {
@@ -15,52 +16,77 @@ export default class App extends Component {
         <button id="history-btn" class="material-symbols-outlined">history</button>
       </header>
       <main id="task-board">
-        ${columns
-          .map(
-            ({ title, tasks }) => `
-            <section class="task-column">
-              <div class="task-column-header">
-                <div class="task-column-title">
-                  <span>${title}</span>
-                  <span class="task-count">${tasks.length}</span>
-                </div>
-                <div class="task-column-controls">
-            <button class="column-add-btn material-symbols-outlined">
-              add
-            </button>
-            <button class="column-remove-btn material-symbols-outlined">
-              close
-            </button>
-          </div>
-              </div>
-              <div class="task-list">
-                ${tasks
-                  .map(
-                    ({ id, title, description }) => `
-                    <div class="task-item">
-                      <h4>${title}</h4>
-                      <p>${description}</p>
-                      <p>author by web</p>
-                    </div>
-                  `
-                  )
-                  .join("")}
-              </div>
-            </section>
-          `
-          )
-          .join("")}
       </main>
     `;
   }
 
   async mounted() {
+    console.log("마운트 되었음");
     const fetchedColumns = await fetchData();
-    console.log(fetchedColumns);
-
     this.setState({
       columns: fetchedColumns,
     });
+    this.renderColumns();
+  }
+
+  renderColumns() {
+    const { columns } = this.state;
+    const $taskBoard = this.$target.querySelector("#task-board");
+
+    $taskBoard.innerHTML = "";
+
+    columns.forEach((column) => {
+      const $columnContainer = document.createElement("div");
+      $columnContainer.dataset.component = `TaskColumn-${column.id}`;
+      $columnContainer.className='task-column-wrapper';
+      $taskBoard.appendChild($columnContainer);
+
+      new Column($columnContainer, {
+        title: column.title,
+        tasks: column.tasks,
+        columnId: column.id,
+        addTask: this.addTask.bind(this), // 자식에게 메서드 전달
+        deleteTask: this.deleteTask.bind(this),
+      });
+    });
+  }
+
+  async addTask(columnId, task) {
+    try {
+      const response = await fetch(`/task`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ columnId, ...task }),
+      });
+      if (response.ok) {
+        const newTask = await response.json();
+        this.setState({
+          columns: this.state.columns.map((col) =>
+            col.id === columnId
+              ? { ...col, tasks: [...col.tasks, newTask] }
+              : col
+          ),
+        });
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async deleteTask(taskId) {
+    try {
+      const response = await fetch(`/task/${taskId}`, { method: "DELETE" });
+      if (response.ok) {
+        this.setState({
+          columns: this.state.columns.map((col) => ({
+            ...col,
+            tasks: col.tasks.filter((task) => task.id !== taskId),
+          })),
+        });
+      }
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   setEvent() {
