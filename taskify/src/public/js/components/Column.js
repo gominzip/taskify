@@ -46,6 +46,7 @@ export default class Column extends Component {
 
     tasks.forEach((task) => {
       const $taskContainer = document.createElement("div");
+      $taskContainer.className = "task-item-wrapper";
       $taskList.appendChild($taskContainer);
 
       new Task($taskContainer, {
