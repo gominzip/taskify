@@ -1,3 +1,4 @@
+import Column from "./components/Column.js";
 import Component from "./core/Component.js";
 
 export default class App extends Component {
@@ -15,41 +16,6 @@ export default class App extends Component {
         <button id="history-btn" class="material-symbols-outlined">history</button>
       </header>
       <main id="task-board">
-        ${columns
-          .map(
-            ({ title, tasks }) => `
-            <section class="task-column">
-              <div class="task-column-header">
-                <div class="task-column-title">
-                  <span>${title}</span>
-                  <span class="task-count">${tasks.length}</span>
-                </div>
-                <div class="task-column-controls">
-            <button class="column-add-btn material-symbols-outlined">
-              add
-            </button>
-            <button class="column-remove-btn material-symbols-outlined">
-              close
-            </button>
-          </div>
-              </div>
-              <div class="task-list">
-                ${tasks
-                  .map(
-                    ({ id, title, description }) => `
-                    <div class="task-item">
-                      <h4>${title}</h4>
-                      <p>${description}</p>
-                      <p>author by web</p>
-                    </div>
-                  `
-                  )
-                  .join("")}
-              </div>
-            </section>
-          `
-          )
-          .join("")}
       </main>
     `;
   }
@@ -60,6 +26,25 @@ export default class App extends Component {
 
     this.setState({
       columns: fetchedColumns,
+    });
+    this.renderColumns();
+  }
+
+  renderColumns() {
+    const { columns } = this.state;
+    const $taskBoard = this.$target.querySelector("#task-board");
+
+    $taskBoard.innerHTML = "";
+
+    columns.forEach((column) => {
+      const $columnContainer = document.createElement("div");
+      $columnContainer.dataset.component = `TaskColumn-${column.id}`;
+      $taskBoard.appendChild($columnContainer);
+
+      new Column($columnContainer, {
+        title: column.title,
+        tasks: column.tasks,
+      });
     });
   }
 
