@@ -1,10 +1,11 @@
 import Component from "../core/Component.js";
+import Task from "./Task.js";
 
 export default class Column extends Component {
   template() {
     const { title, tasks } = this.props;
+    console.log("$taskList:", tasks);
     return `
-      <section class="task-column">
         <div class="task-column-header">
           <div class="task-column-title">
             <span>${title}</span>
@@ -15,20 +16,31 @@ export default class Column extends Component {
             <button class="column-remove-btn material-symbols-outlined">close</button>
           </div>
         </div>
-        <div class="task-list">
-          ${tasks
-            .map(
-              ({ id, title, description, userName }) => `
-                <div class="task-item">
-                  <h4>${title}</h4>
-                  <p>${description}</p>
-                  <p>author by ${userName}</p>
-                </div>
-              `
-            )
-            .join("")}
+        <div class="task-list" data-component="task-list">
         </div>
-      </section>
     `;
+  }
+
+  mounted() {
+    this.renderTasks();
+  }
+
+  renderTasks() {
+    // class와 data-component의 선택자 차이 이해하기...
+    const $taskList = this.$target.querySelector(
+      '[data-component="task-list"]'
+    );
+
+    $taskList.innerHTML = "";
+
+    const { tasks } = this.props;
+
+    tasks.forEach((task) => {
+      const $taskContainer = document.createElement("div");
+      $taskContainer.className = "task-item";
+      $taskList.appendChild($taskContainer);
+
+      new Task($taskContainer, task);
+    });
   }
 }
