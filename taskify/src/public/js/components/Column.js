@@ -13,7 +13,7 @@ export default class Column extends Component {
             <span class="task-count">${tasks.length}</span>
           </div>
           <div class="task-column-controls">
-            <button class="column-add-btn material-symbols-outlined">add</button>
+            <button class="task-add-btn material-symbols-outlined">add</button>
             <button class="column-remove-btn material-symbols-outlined">close</button>
           </div>
         </div>
@@ -25,7 +25,7 @@ export default class Column extends Component {
 
   mounted() {
     this.renderTasks();
-    this.addEvent("click", ".column-add-btn", () => {
+    this.addEvent("click", ".task-add-btn", () => {
       const newTask = {
         title: "새로운 테스크 생성",
         description: "입력은 아직 안받아여",

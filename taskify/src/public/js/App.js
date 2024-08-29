@@ -11,11 +11,27 @@ export default class App extends Component {
   template() {
     return `
       <header>
-        <h1>TASKIFY</h1>
+        <div class="header-left-content">
+          <p>TASKIFY</p>
+          <button class="sort-btn">
+            <span class="material-symbols-outlined">swap_vert</span>
+            <span class="sort-btn-text">생성 순</span>
+          </button>
+        </div>
         <button id="history-btn" class="material-symbols-outlined">history</button>
       </header>
-      <main id="task-board">
-      </main>
+      <main id="task-board"></main>
+      <div class="fixed-action-buttons">
+        <button class="undo-btn" aria-label="Undo">
+          <span class="material-symbols-outlined">undo</span>
+        </button>
+        <button class="redo-btn" aria-label="Redo">
+          <span class="material-symbols-outlined">redo</span>
+        </button>
+        <button class="column-add-btn" aria-label="Add Column">
+          <span class="material-symbols-outlined">add</span>
+        </button>
+      </div>
     `;
   }
 
@@ -36,7 +52,7 @@ export default class App extends Component {
     columns.forEach((column) => {
       const $columnContainer = document.createElement("div");
       $columnContainer.dataset.component = `TaskColumn-${column.id}`;
-      $columnContainer.className='task-column-wrapper';
+      $columnContainer.className = "task-column-wrapper";
       $taskBoard.appendChild($columnContainer);
 
       new Column($columnContainer, {
