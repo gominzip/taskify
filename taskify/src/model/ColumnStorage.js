@@ -48,6 +48,7 @@ class ColumnStorage {
     const [newColumn] = await pool.query("SELECT * FROM columns WHERE id = ?", [
       result.insertId,
     ]);
+    newColumn[0].tasks = [];
     return newColumn[0];
   }
 

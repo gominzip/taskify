@@ -1,4 +1,4 @@
-import { getAllColumns } from "./apis/columnAPI.js";
+import { createColumn, deleteColumn, getAllColumns } from "./apis/columnAPI.js";
 import { createTask, deleteTask } from "./apis/taskAPI.js";
 import Column from "./components/Column.js";
 import Component from "./core/Component.js";
@@ -49,7 +49,6 @@ export default class App extends Component {
   render() {
     super.render();
     this.renderColumns();
-    this.setEvent();
   }
 
   setState(newState) {
@@ -73,10 +72,11 @@ export default class App extends Component {
 
       new Column($columnContainer, {
         title: column.title,
-        tasks: column.tasks,
+        tasks: column.tasks ? column.tasks : [],
         columnId: column.id,
         addTask: this.addTask.bind(this),
         deleteTask: this.deleteTask.bind(this),
+        deleteColumn: this.deleteColumn.bind(this),
       });
     });
   }
@@ -108,7 +108,38 @@ export default class App extends Component {
     }
   }
 
+  async addColumn() {
+    try {
+      const newColumn = await createColumn("New Column");
+      console.log(newColumn);
+      this.setState({
+        columns: [...this.state.columns, newColumn],
+      });
+      console.log(this.state);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async deleteColumn(columnId) {
+    try {
+      await deleteColumn(columnId);
+
+      const updatedColumns = this.state.columns.filter(
+        (col) => col.id !== columnId
+      );
+
+      this.setState({
+        columns: updatedColumns,
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  }
   setEvent() {
+    this.addEvent("click", ".column-add-btn", () => {
+      this.addColumn();
+    });
     this.addEvent("click", "#history-btn", () => {
       console.log("히스토리 버튼 클릭");
     });
