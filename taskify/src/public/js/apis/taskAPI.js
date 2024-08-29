@@ -1,4 +1,4 @@
-import { handleAsync } from "./handleAsync.js";
+import { handleAsync } from "../../utils/handleAsync.js";
 
 export async function getTask(taskId) {
   return handleAsync(async () => {

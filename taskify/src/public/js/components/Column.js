@@ -1,3 +1,4 @@
+import { updateColumnTitle } from "../apis/columnAPI.js";
 import Component from "../core/Component.js";
 import Task from "./Task.js";
 
@@ -124,17 +125,7 @@ export default class Column extends Component {
 
   async updateTitle(newTitle) {
     try {
-      const response = await fetch(`/column/${this.props.columnId}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ title: newTitle }),
-      });
-
-      if (!response.ok) {
-        throw new Error("타이틀 수정 실패");
-      }
+      const response = await updateColumnTitle(this.props.columnId, newTitle);
 
       this.setState({ ...this.state, title: newTitle });
     } catch (error) {

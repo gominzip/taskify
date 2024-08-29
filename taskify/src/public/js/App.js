@@ -1,3 +1,5 @@
+import { getAllColumns } from "./apis/columnAPI.js";
+import { createTask, deleteTask } from "./apis/taskAPI.js";
 import Column from "./components/Column.js";
 import Component from "./core/Component.js";
 
@@ -36,16 +38,18 @@ export default class App extends Component {
   }
 
   async mounted() {
-    const fetchedColumns = await fetchData();
-    this.setState({
-      columns: fetchedColumns,
-    });
-    this.renderColumns();
+    try {
+      const columns = await getAllColumns();
+      this.setState({ columns });
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   render() {
     super.render();
     this.renderColumns();
+    this.setEvent();
   }
 
   setState(newState) {
@@ -79,21 +83,12 @@ export default class App extends Component {
 
   async addTask(columnId, task) {
     try {
-      const response = await fetch(`/task`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ columnId, ...task }),
+      const newTask = await createTask(columnId, task);
+      this.setState({
+        columns: this.state.columns.map((col) =>
+          col.id === columnId ? { ...col, tasks: [...col.tasks, newTask] } : col
+        ),
       });
-      if (response.ok) {
-        const newTask = await response.json();
-        this.setState({
-          columns: this.state.columns.map((col) =>
-            col.id === columnId
-              ? { ...col, tasks: [...col.tasks, newTask] }
-              : col
-          ),
-        });
-      }
     } catch (error) {
       console.error(error);
     }
@@ -101,15 +96,13 @@ export default class App extends Component {
 
   async deleteTask(taskId) {
     try {
-      const response = await fetch(`/task/${taskId}`, { method: "DELETE" });
-      if (response.ok) {
-        this.setState({
-          columns: this.state.columns.map((col) => ({
-            ...col,
-            tasks: col.tasks.filter((task) => task.id !== taskId),
-          })),
-        });
-      }
+      await deleteTask(taskId);
+      this.setState({
+        columns: this.state.columns.map((col) => ({
+          ...col,
+          tasks: col.tasks.filter((task) => task.id !== taskId),
+        })),
+      });
     } catch (error) {
       console.error(error);
     }
@@ -119,16 +112,5 @@ export default class App extends Component {
     this.addEvent("click", "#history-btn", () => {
       console.log("히스토리 버튼 클릭");
     });
-  }
-}
-
-async function fetchData() {
-  try {
-    const response = await fetch("/column");
-    const data = await response.json();
-    return data.data;
-  } catch (error) {
-    console.error(error);
-    return [];
   }
 }
