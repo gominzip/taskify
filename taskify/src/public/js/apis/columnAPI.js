@@ -2,7 +2,8 @@ export async function getAllColumns() {
   try {
     const response = await fetch(`/column`);
     if (!response.ok) throw new Error("전체데이터 패칭 실패");
-    return await response.json();
+    const data = await response.json();
+    return data.data;
   } catch (error) {
     console.error(error);
     throw error;
@@ -13,7 +14,8 @@ export async function getColumn(columnId) {
   try {
     const response = await fetch(`/column/${columnId}`);
     if (!response.ok) throw new Error(`컬럼 ${columnId} 패칭 실패`);
-    return await response.json();
+    const data = await response.json();
+    return data.data;
   } catch (error) {
     console.error(error);
     throw error;
@@ -28,7 +30,8 @@ export async function createColumn(title) {
       body: JSON.stringify({ title }),
     });
     if (!response.ok) throw new Error("컬럼 생성 실패");
-    return await response.json();
+    const data = await response.json();
+    return data.data;
   } catch (error) {
     console.error(error);
     throw error;
