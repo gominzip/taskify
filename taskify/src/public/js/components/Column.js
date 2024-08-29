@@ -1,3 +1,8 @@
+import {
+  addBlurEvent,
+  addDblClickEvent,
+  addKeydownEvent,
+} from "../../utils/eventUtils.js";
 import { updateColumnTitle } from "../apis/columnAPI.js";
 import Component from "../core/Component.js";
 import Task from "./Task.js";
@@ -43,15 +48,20 @@ export default class Column extends Component {
       this.props.addTask(this.props.columnId, newTask);
     });
 
-    this.addEvent("dblclick", ".editable-title", this.editTitle.bind(this));
-    this.addEvent("blur", ".edit-title-input", this.saveTitle.bind(this));
-    this.addEvent("keydown", ".edit-title-input", (e) => {
+    addDblClickEvent(
+      this.$target,
+      ".editable-title",
+      this.editTitle.bind(this)
+    );
+    addBlurEvent(this.$target, ".edit-title-input", this.saveTitle.bind(this));
+    addKeydownEvent(this.$target, ".edit-title-input", (e) => {
       if (e.key === "Enter") {
         this.saveTitle(e);
       } else if (e.key === "Escape") {
         this.cancelEdit(e);
       }
     });
+
     document.addEventListener("click", this.handleClickOutside.bind(this));
   }
 
@@ -125,8 +135,7 @@ export default class Column extends Component {
 
   async updateTitle(newTitle) {
     try {
-      const response = await updateColumnTitle(this.props.columnId, newTitle);
-
+      await updateColumnTitle(this.props.columnId, newTitle);
       this.setState({ ...this.state, title: newTitle });
     } catch (error) {
       console.error(error);

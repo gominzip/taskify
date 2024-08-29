@@ -6,10 +6,10 @@ export default class Task extends Component {
   }
 
   template() {
-    const { id, title, description, userName } = this.state;
+    const { title, description, userName } = this.state;
 
     return `
-     <div class="task-item" data-task-id="${id}">
+     <div class="task-item">
         <div class="task-content">
           <div class="task-title-and-desription">
             <p class="task-content-title">${title}</p>
