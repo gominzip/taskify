@@ -1,13 +1,28 @@
 import { pool } from "../config/db.js";
-import FileHandler from "../utils/FileHandler.js";
 
 class TaskStorage {
-  constructor() {}
-  /** 테스크 추가 */
+  async getTask(id) {
+    const [tasks] = await pool.query("SELECT * FROM tasks WHERE id = ?", [id]);
+    if (tasks.length === 0) {
+      throw new Error(`ID가 '${id}'인 테스크를 찾을 수 없습니다.`);
+    }
+
+    const task = tasks[0];
+
+    const [users] = await pool.query("SELECT name FROM users WHERE id = ?", [
+      task.authorId,
+    ]);
+    const userName = users.length > 0 ? users[0].name : "Unknown";
+
+    return {
+      ...task,
+      userName,
+    };
+  }
+
   async addTask(newTask) {
     const { columnId, title, description, authorId } = newTask;
 
-    // 같은 컬럼의 테스크 가져오기
     const [tasksRows] = await pool.query(
       "SELECT task_order FROM tasks WHERE columnId = ?",
       [columnId]
@@ -23,7 +38,7 @@ class TaskStorage {
     );
 
     const newTaskId = result.insertId;
-    return this.#getTask(newTaskId);
+    return this.getTask(newTaskId);
   }
 
   /** 테스크 삭제 */
@@ -53,7 +68,7 @@ class TaskStorage {
   async updateTask(id, updates) {
     const { columnId, task_order, title, description } = updates;
 
-    const currentTask = await this.#getTask(id);
+    const currentTask = await this.getTask(id);
 
     if (!currentTask) {
       throw new Error(`ID가 '${id}'인 테스크를 찾을 수 없습니다.`);
@@ -81,16 +96,7 @@ class TaskStorage {
       }
     }
 
-    return this.#getTask(id);
-  }
-
-  async #getTask(id) {
-    const [rows] = await pool.query("SELECT * FROM tasks WHERE id = ?", [id]);
-    if (rows.length === 0) {
-      throw new Error(`ID가 '${id}'인 테스크를 찾을 수 없습니다.`);
-    }
-
-    return rows[0];
+    return this.getTask(id);
   }
 
   /** 이전 컬럼에서 우선순위 조정 */
