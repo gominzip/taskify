@@ -10,17 +10,22 @@ export default class Task extends Component {
 
     return `
      <div class="task-item" data-task-id="${id}">
-        <button class="task-refresh-btn">🔄</button>
-        <button class="task-delete-btn">❌</button>
-        <h4>${title}</h4>
-        <p>${description}</p>
-        <p>author by ${userName}</p>
+        <div class="task-content">
+          <p>${title}</p>
+          <p>${description}</p>
+          <p>author by ${userName}</p>
+        </div>
+        <div class="task-buttons">
+          <!--<button class="task-refresh-btn">🔄</button>-->
+          <button class="task-remove-btn material-symbols-outlined">close</button>
+          <button class="task-edit-btn material-symbols-outlined">edit</button>
+        </div>
       </div>
     `;
   }
 
   setEvent() {
-    this.addEvent("click", ".task-delete-btn", async () => {
+    this.addEvent("click", ".task-remove-btn", async () => {
       this.props.deleteTask(this.props.id);
     });
 

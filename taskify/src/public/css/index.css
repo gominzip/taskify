@@ -3,8 +3,15 @@
 header {
   display: flex;
   justify-content: space-between;
-  width: 100%;
-
+  width: 100vw;
+  height: 6.4rem;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 100;
+  padding: 1rem 8rem 0rem 8rem;
+  box-sizing: border-box;
+  background-color: var(--surface-alt);
   h1 {
     font-size: 2.4rem;
     font-weight: 700;
@@ -12,13 +19,16 @@ header {
 }
 
 #task-board {
-  width: 100%;
+  min-width: 100%;
+  width: fit-content;
   display: flex;
+  align-items: start;
   gap: 2%;
 }
 
 .task-column-wrapper {
-  width: 25%;
+  width: 32rem;
+  margin-top: 2rem;
 }
 
 .task-column {
@@ -60,15 +70,15 @@ header {
   box-sizing: border-box;
 }
 
-.column-add-btn.material-symbols-outlined {
+.column-add-btn.material-symbols-outlined,
+.column-remove-btn.material-symbols-outlined,
+.task-remove-btn.material-symbols-outlined,
+.task-edit-btn.material-symbols-outlined {
   font-size: 2.2rem;
   color: #a0a3bd;
 }
-.column-remove-btn.material-symbols-outlined {
-  font-size: 2.2rem;
-  color: #a0a3bd;
-}
-.column-remove-btn.material-symbols-outlined:hover {
+.column-remove-btn.material-symbols-outlined:hover,
+.task-remove-btn.material-symbols-outlined:hover {
   color: #ff3b30;
 }
 
@@ -87,14 +97,20 @@ header {
 
 .task-item {
   display: flex;
-  flex-direction: column;
-  justify-content: center;
+  justify-content: space-between;
+  align-items: center;
   width: 100%;
-  min-height: 12rem;
+  height: 10.4rem;
   background-color: white;
   box-shadow: 0px 1px 4px 0px #6e80913d;
   border-radius: 1rem;
   font-size: 1.4rem;
-  padding: 0.5rem 1.5rem;
+  padding: var(--number-200);
   box-sizing: border-box;
+}
+
+.task-buttons {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
