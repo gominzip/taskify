@@ -1,8 +1,3 @@
-import {
-  addBlurEvent,
-  addDblClickEvent,
-  addKeydownEvent,
-} from "../../utils/eventUtils.js";
 import { updateColumnTitle } from "../apis/columnAPI.js";
 import Component from "../core/Component.js";
 import Task from "./Task.js";
@@ -47,14 +42,12 @@ export default class Column extends Component {
       };
       this.props.addTask(this.props.columnId, newTask);
     });
-
-    addDblClickEvent(
-      this.$target,
-      ".editable-title",
-      this.editTitle.bind(this)
-    );
-    addBlurEvent(this.$target, ".edit-title-input", this.saveTitle.bind(this));
-    addKeydownEvent(this.$target, ".edit-title-input", (e) => {
+    this.addEvent("click", ".column-remove-btn", () => {
+      this.props.deleteColumn(this.props.columnId);
+    });
+    this.addEvent("dblclick", ".editable-title", this.editTitle.bind(this));
+    this.addEvent("blur", ".edit-title-input", this.saveTitle.bind(this));
+    this.addEvent("keydown", ".edit-title-input", (e) => {
       if (e.key === "Enter") {
         this.saveTitle(e);
       } else if (e.key === "Escape") {
