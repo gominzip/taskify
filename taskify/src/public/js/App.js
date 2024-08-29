@@ -59,7 +59,7 @@ export default class App extends Component {
         title: column.title,
         tasks: column.tasks,
         columnId: column.id,
-        addTask: this.addTask.bind(this), // 자식에게 메서드 전달
+        addTask: this.addTask.bind(this),
         deleteTask: this.deleteTask.bind(this),
       });
     });
