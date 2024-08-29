@@ -1,11 +1,7 @@
 import { pool } from "../config/db.js";
-import FileHandler from "../utils/FileHandler.js";
+import taskStorage from "../model/TaskStorage.js";
 
 class ColumnStorage {
-  constructor() {
-    this.filePath = "./src/database/data.json";
-  }
-
   async getAllColumnsWithTasks() {
     const [rows] = await pool.query("SELECT * FROM columns");
 
@@ -40,6 +36,31 @@ class ColumnStorage {
     );
 
     return columnsWithTasks;
+  }
+
+  async getColumn(id) {
+    const [rows] = await pool.query("SELECT * FROM columns WHERE id = ?", [id]);
+    if (rows.length === 0) {
+      throw new Error(`ID가 '${id}'인 컬럼을 찾을 수 없습니다.`);
+    }
+
+    const column = rows[0];
+    const [tasksRows] = await pool.query(
+      "SELECT * FROM tasks WHERE columnId = ?",
+      [id]
+    );
+
+    const tasksWithUserNames = await Promise.all(
+      tasksRows.map(async (task) => {
+        const taskWithUserName = await taskStorage.getTask(task.id);
+        return taskWithUserName;
+      })
+    );
+
+    return {
+      ...column,
+      tasks: tasksWithUserNames,
+    };
   }
 
   async addColumn(title) {
