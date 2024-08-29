@@ -11,9 +11,11 @@ export default class Task extends Component {
     return `
      <div class="task-item" data-task-id="${id}">
         <div class="task-content">
-          <p>${title}</p>
-          <p>${description}</p>
-          <p>author by ${userName}</p>
+          <div class="task-title-and-desription">
+            <p class="task-content-title">${title}</p>
+            <p class="task-content-description">${description}</p>
+          </div>
+          <p class="task-content-author">author by ${userName}</p>
         </div>
         <div class="task-buttons">
           <!--<button class="task-refresh-btn">🔄</button>-->

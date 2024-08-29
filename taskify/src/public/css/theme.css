@@ -1,4 +1,8 @@
+@import "./Pretendard.css";
+
 :root {
+  --font-primary: 'Pretendard', sans-serif;
+  
   --bold-L: normal 700 2.4rem var(--font-primary);
   --bold-M: normal 700 1.6rem var(--font-primary);
   --bold-R: normal 700 1.4rem var(--font-primary);
