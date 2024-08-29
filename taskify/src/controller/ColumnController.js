@@ -9,6 +9,16 @@ export const getAllColumns = async (req, res) => {
   }
 };
 
+export const getColumn = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const data = await columnStorage.getColumn(id);
+    res.status(200).json({ data });
+  } catch (error) {
+    res.status(404).json({ error: error.message });
+  }
+};
+
 export const addColumn = async (req, res) => {
   const { title } = req.body;
 

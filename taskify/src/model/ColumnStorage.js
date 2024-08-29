@@ -1,45 +1,42 @@
 import { pool } from "../config/db.js";
-import FileHandler from "../utils/FileHandler.js";
+import taskStorage from "../model/TaskStorage.js";
 
 class ColumnStorage {
-  constructor() {
-    this.filePath = "./src/database/data.json";
-  }
-
   async getAllColumnsWithTasks() {
-    const [rows] = await pool.query("SELECT * FROM columns");
+    const [columns] = await pool.query("SELECT * FROM columns");
 
     const columnsWithTasks = await Promise.all(
-      rows.map(async (column) => {
-        const [tasks] = await pool.query(
-          "SELECT * FROM tasks WHERE columnId = ?",
-          [column.id]
-        );
+      columns.map(async (column) => {
+        const columnWithTasks = await this.getColumn(column.id);
+        return columnWithTasks;
+      })
+    );
+    return columnsWithTasks;
+  }
 
-        const tasksWithUserNames = await Promise.all(
-          // 테스크의 authorId를 기준으로 이름 찾기
-          tasks.map(async (task) => {
-            const [users] = await pool.query(
-              "SELECT name FROM users WHERE id = ?",
-              [task.authorId]
-            );
+  async getColumn(id) {
+    const [rows] = await pool.query("SELECT * FROM columns WHERE id = ?", [id]);
+    if (rows.length === 0) {
+      throw new Error(`ID가 '${id}'인 컬럼을 찾을 수 없습니다.`);
+    }
 
-            const userName = users.length > 0 ? users[0].name : "Unknown";
-            return {
-              ...task,
-              userName,
-            };
-          })
-        );
+    const column = rows[0];
+    const [tasksRows] = await pool.query(
+      "SELECT * FROM tasks WHERE columnId = ?",
+      [id]
+    );
 
-        return {
-          ...column,
-          tasks: tasksWithUserNames,
-        };
+    const tasksWithUserNames = await Promise.all(
+      tasksRows.map(async (task) => {
+        const taskWithUserName = await taskStorage.getTask(task.id);
+        return taskWithUserName;
       })
     );
 
-    return columnsWithTasks;
+    return {
+      ...column,
+      tasks: tasksWithUserNames,
+    };
   }
 
   async addColumn(title) {

@@ -1,7 +1,7 @@
-class Column {
+class User {
   constructor(name) {
     this.name = name;
   }
 }
 
-export default Column;
+export default User;

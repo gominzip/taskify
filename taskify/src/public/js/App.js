@@ -1,3 +1,5 @@
+import { getAllColumns } from "./apis/columnAPI.js";
+import { createTask, deleteTask } from "./apis/taskAPI.js";
 import Column from "./components/Column.js";
 import Component from "./core/Component.js";
 
@@ -9,24 +11,52 @@ export default class App extends Component {
   }
 
   template() {
-    const { columns } = this.state;
     return `
       <header>
-        <h1>TASKIFY</h1>
+        <div class="header-left-content">
+          <p>TASKIFY</p>
+          <button class="sort-btn">
+            <span class="material-symbols-outlined">swap_vert</span>
+            <span class="sort-btn-text">생성 순</span>
+          </button>
+        </div>
         <button id="history-btn" class="material-symbols-outlined">history</button>
       </header>
-      <main id="task-board">
-      </main>
+      <main id="task-board"></main>
+      <div class="fixed-action-buttons">
+        <button class="undo-btn" aria-label="Undo">
+          <span class="material-symbols-outlined">undo</span>
+        </button>
+        <button class="redo-btn" aria-label="Redo">
+          <span class="material-symbols-outlined">redo</span>
+        </button>
+        <button class="column-add-btn" aria-label="Add Column">
+          <span class="material-symbols-outlined">add</span>
+        </button>
+      </div>
     `;
   }
 
   async mounted() {
-    console.log("마운트 되었음");
-    const fetchedColumns = await fetchData();
-    this.setState({
-      columns: fetchedColumns,
-    });
+    try {
+      const columns = await getAllColumns();
+      this.setState({ columns });
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  render() {
+    super.render();
     this.renderColumns();
+    this.setEvent();
+  }
+
+  setState(newState) {
+    if (JSON.stringify(this.state) !== JSON.stringify(newState)) {
+      this.state = { ...this.state, ...newState };
+      this.renderColumns();
+    }
   }
 
   renderColumns() {
@@ -38,14 +68,14 @@ export default class App extends Component {
     columns.forEach((column) => {
       const $columnContainer = document.createElement("div");
       $columnContainer.dataset.component = `TaskColumn-${column.id}`;
-      $columnContainer.className='task-column-wrapper';
+      $columnContainer.className = "task-column-wrapper";
       $taskBoard.appendChild($columnContainer);
 
       new Column($columnContainer, {
         title: column.title,
         tasks: column.tasks,
         columnId: column.id,
-        addTask: this.addTask.bind(this), // 자식에게 메서드 전달
+        addTask: this.addTask.bind(this),
         deleteTask: this.deleteTask.bind(this),
       });
     });
@@ -53,21 +83,12 @@ export default class App extends Component {
 
   async addTask(columnId, task) {
     try {
-      const response = await fetch(`/task`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ columnId, ...task }),
+      const newTask = await createTask(columnId, task);
+      this.setState({
+        columns: this.state.columns.map((col) =>
+          col.id === columnId ? { ...col, tasks: [...col.tasks, newTask] } : col
+        ),
       });
-      if (response.ok) {
-        const newTask = await response.json();
-        this.setState({
-          columns: this.state.columns.map((col) =>
-            col.id === columnId
-              ? { ...col, tasks: [...col.tasks, newTask] }
-              : col
-          ),
-        });
-      }
     } catch (error) {
       console.error(error);
     }
@@ -75,15 +96,13 @@ export default class App extends Component {
 
   async deleteTask(taskId) {
     try {
-      const response = await fetch(`/task/${taskId}`, { method: "DELETE" });
-      if (response.ok) {
-        this.setState({
-          columns: this.state.columns.map((col) => ({
-            ...col,
-            tasks: col.tasks.filter((task) => task.id !== taskId),
-          })),
-        });
-      }
+      await deleteTask(taskId);
+      this.setState({
+        columns: this.state.columns.map((col) => ({
+          ...col,
+          tasks: col.tasks.filter((task) => task.id !== taskId),
+        })),
+      });
     } catch (error) {
       console.error(error);
     }
@@ -93,16 +112,5 @@ export default class App extends Component {
     this.addEvent("click", "#history-btn", () => {
       console.log("히스토리 버튼 클릭");
     });
-  }
-}
-
-async function fetchData() {
-  try {
-    const response = await fetch("/column");
-    const data = await response.json();
-    return data.data;
-  } catch (error) {
-    console.error(error);
-    return [];
   }
 }
