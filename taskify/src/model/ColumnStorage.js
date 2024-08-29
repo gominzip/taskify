@@ -3,38 +3,14 @@ import taskStorage from "../model/TaskStorage.js";
 
 class ColumnStorage {
   async getAllColumnsWithTasks() {
-    const [rows] = await pool.query("SELECT * FROM columns");
+    const [columns] = await pool.query("SELECT * FROM columns");
 
     const columnsWithTasks = await Promise.all(
-      rows.map(async (column) => {
-        const [tasks] = await pool.query(
-          "SELECT * FROM tasks WHERE columnId = ?",
-          [column.id]
-        );
-
-        const tasksWithUserNames = await Promise.all(
-          // 테스크의 authorId를 기준으로 이름 찾기
-          tasks.map(async (task) => {
-            const [users] = await pool.query(
-              "SELECT name FROM users WHERE id = ?",
-              [task.authorId]
-            );
-
-            const userName = users.length > 0 ? users[0].name : "Unknown";
-            return {
-              ...task,
-              userName,
-            };
-          })
-        );
-
-        return {
-          ...column,
-          tasks: tasksWithUserNames,
-        };
+      columns.map(async (column) => {
+        const columnWithTasks = await this.getColumn(column.id);
+        return columnWithTasks;
       })
     );
-
     return columnsWithTasks;
   }
 
