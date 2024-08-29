@@ -1,4 +1,5 @@
 @import url(theme.css);
+@import url(reset.css);
 @import url(global.css);
 @import url(index.css);
 @import url(icons.css);
