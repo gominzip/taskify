@@ -74,7 +74,12 @@ class ColumnStorage {
       [id]
     );
 
-    if (tasksRows.length === 0) {
+    const [columnRows] = await pool.query(
+      "SELECT id FROM columns WHERE id = ?",
+      [id]
+    );
+
+    if (columnRows.length === 0) {
       throw new Error(`ID가 '${id}'인 컬럼을 찾을 수 없습니다.`);
     }
 
