@@ -43,6 +43,18 @@ export default class App extends Component {
     this.renderColumns();
   }
 
+  render() {
+    super.render();
+    this.renderColumns();
+  }
+
+  setState(newState) {
+    if (JSON.stringify(this.state) !== JSON.stringify(newState)) {
+      this.state = { ...this.state, ...newState };
+      this.renderColumns();
+    }
+  }
+
   renderColumns() {
     const { columns } = this.state;
     const $taskBoard = this.$target.querySelector("#task-board");

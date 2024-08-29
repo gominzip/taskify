@@ -2,7 +2,7 @@ import Component from "../core/Component.js";
 
 export default class Task extends Component {
   setup() {
-    this.state = { ...this.props }; // 초기상태를 props로
+    this.state = { ...this.props };
   }
 
   template() {

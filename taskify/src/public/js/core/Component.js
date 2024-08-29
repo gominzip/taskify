@@ -7,8 +7,8 @@ export default class Component {
     this.$target = $target;
     this.props = props;
     this.setup();
-    this.render();
     this.setEvent();
+    this.render();
   }
 
   setup() {}
@@ -27,10 +27,8 @@ export default class Component {
   setEvent() {}
 
   setState(newState) {
-    if (JSON.stringify(this.state) !== JSON.stringify(newState)) {
-      this.state = { ...this.state, ...newState };
-      this.render();
-    }
+    this.state = { ...this.state, ...newState };
+    this.render();
   }
 
   addEvent(eventType, selector, callback) {

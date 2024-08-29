@@ -86,7 +86,7 @@ header {
 }
 
 .task-column-header {
-  width: 100%;
+  width: 30rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -102,6 +102,16 @@ header {
   color: var(--text-bold);
 }
 
+.edit-title-input {
+  width: 20.4rem;
+  height: 2.4rem;
+  background-color: var(--surface-default);
+  border: 1px solid var(--borer-default);
+  font: var(--display-medium-14);
+  color: var(--text-strong);
+  padding: 0 0.8rem;
+}
+
 .task-count {
   width: 2.4rem;
   height: 2.4rem;
@@ -114,6 +124,10 @@ header {
   justify-content: center;
   padding: 0 var(--number-50);
   box-sizing: border-box;
+}
+
+.editing .task-count {
+  display: none;
 }
 
 .task-list {
