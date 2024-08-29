@@ -9,7 +9,6 @@ export default class App extends Component {
   }
 
   template() {
-    const { columns } = this.state;
     return `
       <header>
         <h1>TASKIFY</h1>
@@ -21,7 +20,6 @@ export default class App extends Component {
   }
 
   async mounted() {
-    console.log("마운트 되었음");
     const fetchedColumns = await fetchData();
     this.setState({
       columns: fetchedColumns,
