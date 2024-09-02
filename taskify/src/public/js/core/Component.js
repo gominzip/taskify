@@ -7,8 +7,8 @@ export default class Component {
     this.$target = $target;
     this.props = props;
     this.setup();
-    this.setEvent();
     this.render();
+    this.setEvent();
   }
 
   setup() {}
