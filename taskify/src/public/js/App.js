@@ -4,7 +4,7 @@ import {
   getAllColumns,
   updateColumnTitle,
 } from "./apis/columnAPI.js";
-import { createTask, deleteTask } from "./apis/taskAPI.js";
+import { createTask, deleteTask, updateTask } from "./apis/taskAPI.js";
 import Column from "./components/Column.js";
 import Component from "./core/Component.js";
 
@@ -77,6 +77,7 @@ export default class App extends Component {
         columnId: column.id,
         addTask: this.addTask.bind(this),
         deleteTask: this.deleteTask.bind(this),
+        updateTask: this.updateTask.bind(this),
         deleteColumn: this.deleteColumn.bind(this),
         updateColumn: this.updateColumn.bind(this),
       });
@@ -90,6 +91,27 @@ export default class App extends Component {
         columns: this.state.columns.map((col) =>
           col.id === columnId ? { ...col, tasks: [...col.tasks, newTask] } : col
         ),
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async updateTask(columnId, taskId, updates) {
+    try {
+      const updatedTask = await updateTask(taskId, updates);
+      this.setState({
+        columns: this.state.columns.map((col) => {
+          if (col.id === columnId) {
+            return {
+              ...col,
+              tasks: col.tasks.map((task) =>
+                task.id === taskId ? updatedTask : task
+              ),
+            };
+          }
+          return col;
+        }),
       });
     } catch (error) {
       console.error(error);

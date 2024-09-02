@@ -4,10 +4,10 @@ html {
   height: fit-content;
   margin: 0;
   font-size: 62.5%;
-  overflow: scroll;
+  overflow-x: visible;
   display: flex;
   justify-content: center;
-  background-color: var(--surface-alt)
+  background-color: var(--surface-alt);
 }
 
 html::-webkit-scrollbar {
@@ -23,14 +23,13 @@ body {
   min-height: 99vh;
   height: fit-content;
   margin: 0;
-  overflow-x: scroll;
+  overflow-x: visible;
 }
 
 #app {
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-width: 100%;
   width: fit-content;
   min-height: 99vh;
   height: fit-content;

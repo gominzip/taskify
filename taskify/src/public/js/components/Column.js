@@ -45,6 +45,7 @@ export default class Column extends Component {
       new Task($taskContainer, {
         ...task,
         deleteTask: this.props.deleteTask,
+        updateTask: this.props.updateTask
       });
     });
 
@@ -96,10 +97,10 @@ export default class Column extends Component {
 
       if (titleFilled && descriptionFilled) {
         $saveButton.disabled = false;
-        $saveButton.classList.add("enalbed");
+        $saveButton.classList.add("enabled");
       } else {
         $saveButton.disabled = true;
-        $saveButton.classList.remove("enalbed");
+        $saveButton.classList.remove("enabled");
       }
     };
 
