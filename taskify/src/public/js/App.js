@@ -44,10 +44,6 @@ export default class App extends Component {
     } catch (error) {
       console.error(error);
     }
-  }
-
-  render() {
-    super.render();
     this.renderColumns();
   }
 
@@ -111,11 +107,9 @@ export default class App extends Component {
   async addColumn() {
     try {
       const newColumn = await createColumn("New Column");
-      console.log(newColumn);
       this.setState({
         columns: [...this.state.columns, newColumn],
       });
-      console.log(this.state);
     } catch (error) {
       console.error(error);
     }
@@ -124,24 +118,17 @@ export default class App extends Component {
   async deleteColumn(columnId) {
     try {
       await deleteColumn(columnId);
-
-      const updatedColumns = this.state.columns.filter(
-        (col) => col.id !== columnId
-      );
-
       this.setState({
-        columns: updatedColumns,
+        columns: this.state.columns.filter((col) => col.id !== columnId),
       });
     } catch (error) {
       console.error(error);
     }
   }
+
   setEvent() {
     this.addEvent("click", ".column-add-btn", () => {
       this.addColumn();
-    });
-    this.addEvent("click", "#history-btn", () => {
-      console.log("히스토리 버튼 클릭");
     });
   }
 }

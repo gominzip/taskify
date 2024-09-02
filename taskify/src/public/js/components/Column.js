@@ -1,4 +1,5 @@
 import { updateColumnTitle } from "../apis/columnAPI.js";
+import { createTask } from "../apis/taskAPI.js";
 import Component from "../core/Component.js";
 import Task from "./Task.js";
 
@@ -38,9 +39,7 @@ export default class Column extends Component {
     );
     $taskList.innerHTML = "";
 
-    const { tasks } = this.state;
-
-    tasks.forEach((task) => {
+    this.state.tasks.forEach((task) => {
       const $taskContainer = document.createElement("div");
       $taskContainer.className = "task-item-wrapper";
       $taskList.appendChild($taskContainer);
@@ -109,6 +108,21 @@ export default class Column extends Component {
     this.addEvent("click", ".task-cancel-btn", () => {
       this.hideTaskInputForm();
     });
+    this.addEvent("click", ".task-save-btn", () => {
+      if (!$saveButton.disabled) {
+        const title = $titleInput.value.trim();
+        const description = $descriptionInput.value.trim();
+
+        if (title && description) {
+          this.props.addTask(this.props.columnId, {
+            title,
+            description,
+            authorId: 2,
+          });
+          this.hideTaskInputForm();
+        }
+      }
+    });
 
     $titleInput.addEventListener("input", checkInputValues);
     $descriptionInput.addEventListener("input", checkInputValues);
@@ -119,8 +133,7 @@ export default class Column extends Component {
       const { isAddingTask } = this.state;
       if (isAddingTask) {
         this.setState({ ...this.state, isAddingTask: false }, () => {
-          const $taskInputForm = this.$target.querySelector(".task-input-form");
-          if ($taskInputForm) $taskInputForm.remove();
+          this.hideTaskInputForm();
         });
       } else {
         this.setState({ ...this.state, isAddingTask: true }, () => {
