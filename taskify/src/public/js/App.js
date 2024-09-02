@@ -1,4 +1,9 @@
-import { createColumn, deleteColumn, getAllColumns } from "./apis/columnAPI.js";
+import {
+  createColumn,
+  deleteColumn,
+  getAllColumns,
+  updateColumnTitle,
+} from "./apis/columnAPI.js";
 import { createTask, deleteTask } from "./apis/taskAPI.js";
 import Column from "./components/Column.js";
 import Component from "./core/Component.js";
@@ -73,6 +78,7 @@ export default class App extends Component {
         addTask: this.addTask.bind(this),
         deleteTask: this.deleteTask.bind(this),
         deleteColumn: this.deleteColumn.bind(this),
+        updateColumn: this.updateColumn.bind(this),
       });
     });
   }
@@ -110,6 +116,20 @@ export default class App extends Component {
       this.setState({
         columns: [...this.state.columns, newColumn],
       });
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async updateColumn(columnId, newTitle) {
+    try {
+      const updatedColumn = await updateColumnTitle(columnId, newTitle);
+      this.setState({
+        columns: this.state.columns.map((col) =>
+          col.id === columnId ? { ...col, title: updatedColumn.title } : col
+        ),
+      });
+      console.log(this.state);
     } catch (error) {
       console.error(error);
     }

@@ -1,5 +1,3 @@
-import { updateColumnTitle } from "../apis/columnAPI.js";
-import { createTask } from "../apis/taskAPI.js";
 import Component from "../core/Component.js";
 import Task from "./Task.js";
 
@@ -208,8 +206,7 @@ export default class Column extends Component {
 
   async updateTitle(newTitle) {
     try {
-      await updateColumnTitle(this.props.columnId, newTitle);
-      this.setState({ ...this.state, title: newTitle });
+      this.props.updateColumn(this.props.columnId, newTitle);
     } catch (error) {
       console.error(error);
     }
