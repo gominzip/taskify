@@ -1,5 +1,7 @@
 input,
-button {
+textarea,
+button,
+p {
   margin: 0;
   padding: 0;
   border: none;
@@ -9,6 +11,7 @@ button {
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
+  resize: none;
 }
 
 button {
@@ -25,6 +28,7 @@ input {
   border: none;
 }
 
+textarea:focus,
 input:focus,
 button:focus {
   outline: none;
@@ -51,4 +55,3 @@ textarea {
   appearance: none;
   border-radius: 0;
 }
-

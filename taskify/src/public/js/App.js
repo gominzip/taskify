@@ -1,5 +1,10 @@
-import { getAllColumns } from "./apis/columnAPI.js";
-import { createTask, deleteTask } from "./apis/taskAPI.js";
+import {
+  createColumn,
+  deleteColumn,
+  getAllColumns,
+  updateColumnTitle,
+} from "./apis/columnAPI.js";
+import { createTask, deleteTask, updateTask } from "./apis/taskAPI.js";
 import Column from "./components/Column.js";
 import Component from "./core/Component.js";
 
@@ -44,12 +49,7 @@ export default class App extends Component {
     } catch (error) {
       console.error(error);
     }
-  }
-
-  render() {
-    super.render();
     this.renderColumns();
-    this.setEvent();
   }
 
   setState(newState) {
@@ -73,10 +73,13 @@ export default class App extends Component {
 
       new Column($columnContainer, {
         title: column.title,
-        tasks: column.tasks,
+        tasks: column.tasks ? column.tasks : [],
         columnId: column.id,
         addTask: this.addTask.bind(this),
         deleteTask: this.deleteTask.bind(this),
+        updateTask: this.updateTask.bind(this),
+        deleteColumn: this.deleteColumn.bind(this),
+        updateColumn: this.updateColumn.bind(this),
       });
     });
   }
@@ -88,6 +91,27 @@ export default class App extends Component {
         columns: this.state.columns.map((col) =>
           col.id === columnId ? { ...col, tasks: [...col.tasks, newTask] } : col
         ),
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async updateTask(columnId, taskId, updates) {
+    try {
+      const updatedTask = await updateTask(taskId, updates);
+      this.setState({
+        columns: this.state.columns.map((col) => {
+          if (col.id === columnId) {
+            return {
+              ...col,
+              tasks: col.tasks.map((task) =>
+                task.id === taskId ? updatedTask : task
+              ),
+            };
+          }
+          return col;
+        }),
       });
     } catch (error) {
       console.error(error);
@@ -108,9 +132,45 @@ export default class App extends Component {
     }
   }
 
+  async addColumn() {
+    try {
+      const newColumn = await createColumn("New Column");
+      this.setState({
+        columns: [...this.state.columns, newColumn],
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async updateColumn(columnId, newTitle) {
+    try {
+      const updatedColumn = await updateColumnTitle(columnId, newTitle);
+      this.setState({
+        columns: this.state.columns.map((col) =>
+          col.id === columnId ? { ...col, title: updatedColumn.title } : col
+        ),
+      });
+      console.log(this.state);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async deleteColumn(columnId) {
+    try {
+      await deleteColumn(columnId);
+      this.setState({
+        columns: this.state.columns.filter((col) => col.id !== columnId),
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   setEvent() {
-    this.addEvent("click", "#history-btn", () => {
-      console.log("히스토리 버튼 클릭");
+    this.addEvent("click", ".column-add-btn", () => {
+      this.addColumn();
     });
   }
 }

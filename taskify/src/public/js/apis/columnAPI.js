@@ -39,7 +39,8 @@ export async function updateColumnTitle(columnId, newTitle) {
       body: JSON.stringify({ title: newTitle }),
     });
     if (!response.ok) throw new Error(`컬럼 ${id} 업데이트 실패`);
-    return await response.json();
+    const data = await response.json();
+    return data.data;
   });
 }
 
