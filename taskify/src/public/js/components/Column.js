@@ -45,7 +45,8 @@ export default class Column extends Component {
       new Task($taskContainer, {
         ...task,
         deleteTask: this.props.deleteTask,
-        updateTask: this.props.updateTask,
+        updateTaskContent: this.props.updateTaskContent,
+        moveTask: this.props.moveTask,
       });
     });
 

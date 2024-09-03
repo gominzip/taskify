@@ -78,10 +78,10 @@ export default class App extends Component {
         columnId: column.id,
         addTask: this.addTask.bind(this),
         deleteTask: this.deleteTask.bind(this),
-        updateTask: this.updateTaskContent.bind(this),
+        updateTaskContent: this.updateTaskContent.bind(this),
+        moveTask: this.moveTask.bind(this),
         deleteColumn: this.deleteColumn.bind(this),
         updateColumn: this.updateColumn.bind(this),
-        moveTask: this.moveTask.bind(this),
       });
     });
   }

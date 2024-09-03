@@ -4,7 +4,7 @@ export default class TaskAddForm extends TaskForm {
   template() {
     return `
       <div class="task-input-form">
-        <div class="task-title-and-description">
+        <div class="task-input-content">
           <input type="text" class="task-content-title" placeholder="제목을 입력하세요" />
           <textarea class="task-content-description" placeholder="내용을 입력하세요"></textarea>
         </div>

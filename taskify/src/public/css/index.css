@@ -158,6 +158,13 @@ header {
   }
 }
 
+.task-input-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.8rem;
+}
+
 .task-edit-buttons {
   width: 100%;
   display: flex;

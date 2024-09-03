@@ -6,7 +6,7 @@ export default class TaskEditForm extends TaskForm {
 
     return `
       <div class="task-input-form">
-        <div class="task-title-and-description">
+        <div class="task-input-content">
           <input type="text" class="task-content-title" value="${title}" placeholder="제목을 입력하세요"/>
           <textarea class="task-content-description" placeholder="내용을 입력하세요">${description}</textarea>
         </div>
