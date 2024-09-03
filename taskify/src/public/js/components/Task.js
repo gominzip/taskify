@@ -64,7 +64,7 @@ export default class Task extends Component {
   }
 
   handleRemoveTask() {
-    this.props.deleteTask(this.props.id);
+    this.props.deleteTask(this.props.columnId, this.props.id);
   }
 
   toggleEditMode() {

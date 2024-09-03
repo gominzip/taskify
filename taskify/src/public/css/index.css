@@ -144,7 +144,7 @@ header {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  width: 100%;
+  width: 32rem;
   height: fit-content;
   background-color: var(--surface-default);
   box-shadow: var(--shadow-nomal);

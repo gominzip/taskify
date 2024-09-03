@@ -40,6 +40,7 @@ export default class Column extends Component {
     this.state.tasks.forEach((task) => {
       const $taskContainer = document.createElement("div");
       $taskContainer.className = "task-item-wrapper";
+      $taskContainer.draggable = "true";
       $taskList.appendChild($taskContainer);
 
       new Task($taskContainer, {
@@ -130,7 +131,7 @@ export default class Column extends Component {
     }
   }
 
-  cancelTitleEdit(e) {
+  cancelTitleEdit() {
     this.$target.querySelector(".editable-title").textContent =
       this.props.title;
   }
