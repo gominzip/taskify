@@ -2,6 +2,7 @@ import {
   createColumn,
   deleteColumn,
   getAllColumns,
+  getColumn,
   updateColumnTitle,
 } from "./apis/columnAPI.js";
 import { createTask, deleteTask, updateTask } from "./apis/taskAPI.js";
@@ -67,8 +68,8 @@ export default class App extends Component {
 
     columns.forEach((column) => {
       const $columnContainer = document.createElement("div");
-      $columnContainer.dataset.component = `TaskColumn-${column.id}`;
       $columnContainer.className = "task-column-wrapper";
+      $columnContainer.dataset.columnId = column.id;
       $taskBoard.appendChild($columnContainer);
 
       new Column($columnContainer, {
@@ -77,9 +78,10 @@ export default class App extends Component {
         columnId: column.id,
         addTask: this.addTask.bind(this),
         deleteTask: this.deleteTask.bind(this),
-        updateTask: this.updateTask.bind(this),
+        updateTask: this.updateTaskContent.bind(this),
         deleteColumn: this.deleteColumn.bind(this),
         updateColumn: this.updateColumn.bind(this),
+        moveTask: this.moveTask.bind(this),
       });
     });
   }
@@ -97,7 +99,7 @@ export default class App extends Component {
     }
   }
 
-  async updateTask(columnId, taskId, updates) {
+  async updateTaskContent(columnId, taskId, updates) {
     try {
       const updatedTask = await updateTask(taskId, updates);
       this.setState({
@@ -111,6 +113,29 @@ export default class App extends Component {
             };
           }
           return col;
+        }),
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async moveTask(beforeColumnId, afterColumnId, taskId, updates) {
+    try {
+      const response = await updateTask(taskId, updates);
+
+      const updatedBeforeColumn = await getColumn(beforeColumnId);
+      const updatedAfterColumn = await getColumn(afterColumnId);
+
+      this.setState({
+        columns: this.state.columns.map((column) => {
+          if (column.id === beforeColumnId) {
+            return updatedBeforeColumn;
+          }
+          if (column.id === afterColumnId) {
+            return updatedAfterColumn;
+          }
+          return column;
         }),
       });
     } catch (error) {

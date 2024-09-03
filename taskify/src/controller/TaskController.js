@@ -2,7 +2,6 @@ import taskStorage from "../model/TaskStorage.js";
 
 export const getTask = async (req, res) => {
   const { id } = req.params;
-  console.log(id);
   try {
     const data = await taskStorage.getTask(id);
     res.status(200).json({ data });
