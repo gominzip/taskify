@@ -113,7 +113,7 @@ export default class Column extends Component {
 
     if (newTitle && newTitle !== this.props.title) {
       this.updateTitle(newTitle);
-      this.$target.querySelector(".editable-title").textContent = newTitle;
+      $title.innerHTML = newTitle;
     } else {
       this.cancelTitleEdit(e);
     }
