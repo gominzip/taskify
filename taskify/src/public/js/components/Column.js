@@ -1,5 +1,6 @@
 import Component from "../core/Component.js";
 import Task from "./Task.js";
+import TaskAddForm from "./TaskAddForm.js";
 
 export default class Column extends Component {
   setup() {
@@ -21,8 +22,7 @@ export default class Column extends Component {
             <button class="column-remove-btn material-symbols-outlined">close</button>
           </div>
         </div>
-        <div class="task-list" data-component="task-list">
-        </div>
+        <div class="task-list" data-component="task-list"></div>
       </section>
     `;
   }
@@ -40,138 +40,60 @@ export default class Column extends Component {
     this.state.tasks.forEach((task) => {
       const $taskContainer = document.createElement("div");
       $taskContainer.className = "task-item-wrapper";
+      $taskContainer.draggable = "true";
       $taskList.appendChild($taskContainer);
 
       new Task($taskContainer, {
         ...task,
         deleteTask: this.props.deleteTask,
-        updateTask: this.props.updateTask
+        updateTaskContent: this.props.updateTaskContent,
+        moveTask: this.props.moveTask,
       });
     });
 
     if (this.state.isAddingTask) {
-      this.renderTaskInputForm();
+      this.renderTaskAddForm();
     }
   }
 
-  renderTaskInputForm() {
+  renderTaskAddForm() {
     const $taskList = this.$target.querySelector(
       '[data-component="task-list"]'
     );
+    const $taskAddContainer = document.createElement("div");
+    $taskList.prepend($taskAddContainer);
 
-    const $inputForm = document.createElement("div");
-    $inputForm.classList.add("task-input-form");
-    $inputForm.innerHTML = `
-      <div class="task-title-and-desription">
-        <input type="text" class="task-content-title" placeholder="제목을 입력하세요" />
-        <textarea class="task-content-description" placeholder="내용을 입력하세요"></textarea>
-      </div>
-      <div class="task-edit-buttons">
-        <button class="task-cancel-btn">취소</button>
-        <button class="task-save-btn">등록</button>
-      </div>
-    `;
-
-    $taskList.prepend($inputForm);
-    this.addTaskInputListeners();
+    new TaskAddForm($taskAddContainer, {
+      onCancel: this.hideTaskInputForm.bind(this),
+      onSave: this.saveNewTask.bind(this),
+    });
   }
 
   hideTaskInputForm() {
-    const $inputForm = this.$target.querySelector(".task-input-form");
-    if ($inputForm) {
-      $inputForm.remove();
-    }
     this.setState({ ...this.state, isAddingTask: false });
   }
 
-  addTaskInputListeners() {
-    const $titleInput = this.$target.querySelector(".task-content-title");
-    const $descriptionInput = this.$target.querySelector(
-      ".task-content-description"
-    );
-    const $saveButton = this.$target.querySelector(".task-save-btn");
-
-    const checkInputValues = () => {
-      const titleFilled = $titleInput.value.trim() !== "";
-      const descriptionFilled = $descriptionInput.value.trim() !== "";
-
-      if (titleFilled && descriptionFilled) {
-        $saveButton.disabled = false;
-        $saveButton.classList.add("enabled");
-      } else {
-        $saveButton.disabled = true;
-        $saveButton.classList.remove("enabled");
-      }
-    };
-
-    this.addEvent("click", ".task-cancel-btn", () => {
-      this.hideTaskInputForm();
+  saveNewTask(title, description) {
+    this.props.addTask(this.props.columnId, {
+      title,
+      description,
+      authorId: 2,
     });
-    this.addEvent("click", ".task-save-btn", () => {
-      if (!$saveButton.disabled) {
-        const title = $titleInput.value.trim();
-        const description = $descriptionInput.value.trim();
-
-        if (title && description) {
-          this.props.addTask(this.props.columnId, {
-            title,
-            description,
-            authorId: 2,
-          });
-          this.hideTaskInputForm();
-        }
-      }
-    });
-
-    $titleInput.addEventListener("input", checkInputValues);
-    $descriptionInput.addEventListener("input", checkInputValues);
+    this.hideTaskInputForm();
   }
 
   setEvent() {
-    this.addEvent("click", ".task-add-btn", () => {
-      const { isAddingTask } = this.state;
-      if (isAddingTask) {
-        this.setState({ ...this.state, isAddingTask: false }, () => {
-          this.hideTaskInputForm();
-        });
-      } else {
-        this.setState({ ...this.state, isAddingTask: true }, () => {
-          this.renderTaskInputForm();
-        });
-      }
-    });
-
-    this.addEvent("click", ".column-remove-btn", () => {
-      this.props.deleteColumn(this.props.columnId);
-    });
+    this.addEvent("click", ".task-add-btn", this.toggleTaskAddForm.bind(this));
+    this.addEvent("click", ".column-remove-btn", this.removeColumn.bind(this));
     this.addEvent("dblclick", ".editable-title", this.editTitle.bind(this));
-    this.addEvent("blur", ".edit-column-input ", this.saveTitle.bind(this));
-    this.addEvent("keydown", ".edit-column-input ", (e) => {
-      if (e.key === "Enter") {
-        this.saveTitle(e);
-      } else if (e.key === "Escape") {
-        this.cancelEdit(e);
-      }
-    });
-
-    document.addEventListener("click", this.handleClickOutside.bind(this));
   }
 
-  removeEventListeners() {
-    document.removeEventListener("click", this.handleClickOutside.bind(this));
+  toggleTaskAddForm() {
+    this.setState({ ...this.state, isAddingTask: !this.state.isAddingTask });
   }
 
-  handleClickOutside(e) {
-    const $editableTitle = this.$target.querySelector(".editable-title");
-    const $input = this.$target.querySelector(".edit-column-input");
-
-    if (
-      $input &&
-      !$input.contains(e.target) &&
-      !$editableTitle.contains(e.target)
-    ) {
-      this.saveTitle({ target: $input });
-    }
+  removeColumn() {
+    this.props.deleteColumn(this.props.columnId);
   }
 
   editTitle(e) {
@@ -183,37 +105,38 @@ export default class Column extends Component {
       $title.innerHTML = `<input type="text" class="edit-column-input" value="${currentTitle}">`;
       const $input = $title.querySelector(".edit-column-input");
       $input.focus();
+      document.addEventListener("click", this.handleGlobalClick.bind(this));
     }
   }
 
   saveTitle(e) {
     const $input = e.target;
-    const $title = $input.parentElement;
     const newTitle = $input.value.trim();
 
-    if (newTitle && newTitle !== $title.textContent.trim()) {
+    if (newTitle && newTitle !== this.props.title) {
       this.updateTitle(newTitle);
+      $title.innerHTML = newTitle;
     } else {
-      this.cancelEdit(e);
+      this.cancelTitleEdit(e);
     }
     this.$target.classList.remove("editing");
+    document.removeEventListener("click", this.handleGlobalClick.bind(this));
   }
 
-  cancelEdit(e) {
-    const $input = e.target;
-    const $title = $input.parentElement;
-    $title.innerHTML = $title.querySelector(".edit-column-input").value.trim();
+  handleGlobalClick(e) {
+    const $input = this.$target.querySelector(".edit-column-input");
+
+    if ($input && !$input.contains(e.target)) {
+      this.saveTitle({ target: $input });
+    }
+  }
+
+  cancelTitleEdit() {
+    this.$target.querySelector(".editable-title").textContent =
+      this.props.title;
   }
 
   async updateTitle(newTitle) {
-    try {
-      this.props.updateColumn(this.props.columnId, newTitle);
-    } catch (error) {
-      console.error(error);
-    }
-  }
-
-  destroy() {
-    this.removeEventListeners();
+    this.props.updateColumn(this.props.columnId, newTitle);
   }
 }

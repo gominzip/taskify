@@ -30,6 +30,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
+  min-width: 100%;
   width: fit-content;
   min-height: 99vh;
   height: fit-content;

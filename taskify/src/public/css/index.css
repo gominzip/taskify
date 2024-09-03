@@ -65,6 +65,7 @@ header {
 
 #task-board {
   overflow-x: visible;
+  min-width: 100%;
   width: fit-content;
   display: flex;
   align-items: start;
@@ -133,7 +134,8 @@ header {
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 100%;
+  min-width: 100%;
+  min-height: 60vh;
   gap: 1rem;
   margin-top: 1.5rem;
 }
@@ -142,7 +144,7 @@ header {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  width: 100%;
+  width: 32rem;
   height: fit-content;
   background-color: var(--surface-default);
   box-shadow: var(--shadow-nomal);
@@ -154,6 +156,13 @@ header {
   textarea {
     height: 1.7rem;
   }
+}
+
+.task-input-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.8rem;
 }
 
 .task-edit-buttons {
@@ -201,7 +210,7 @@ header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: 100%;
+  width: 32rem;
   height: 10.4rem;
   background-color: var(--surface-default);
   box-shadow: var(--shadow-nomal);
