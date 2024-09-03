@@ -21,8 +21,7 @@ export default class Column extends Component {
             <button class="column-remove-btn material-symbols-outlined">close</button>
           </div>
         </div>
-        <div class="task-list" data-component="task-list">
-        </div>
+        <div class="task-list" data-component="task-list"></div>
       </section>
     `;
   }
@@ -45,7 +44,7 @@ export default class Column extends Component {
       new Task($taskContainer, {
         ...task,
         deleteTask: this.props.deleteTask,
-        updateTask: this.props.updateTask
+        updateTask: this.props.updateTask,
       });
     });
 
@@ -128,50 +127,28 @@ export default class Column extends Component {
   }
 
   setEvent() {
-    this.addEvent("click", ".task-add-btn", () => {
-      const { isAddingTask } = this.state;
-      if (isAddingTask) {
-        this.setState({ ...this.state, isAddingTask: false }, () => {
-          this.hideTaskInputForm();
-        });
-      } else {
-        this.setState({ ...this.state, isAddingTask: true }, () => {
-          this.renderTaskInputForm();
-        });
-      }
-    });
+    this.addEvent("click", ".task-add-btn", this.handleTaskAddBtn.bind(this));
 
-    this.addEvent("click", ".column-remove-btn", () => {
-      this.props.deleteColumn(this.props.columnId);
-    });
+    this.addEvent("click", ".column-remove-btn", this.removeColumn.bind(this));
+
     this.addEvent("dblclick", ".editable-title", this.editTitle.bind(this));
-    this.addEvent("blur", ".edit-column-input ", this.saveTitle.bind(this));
-    this.addEvent("keydown", ".edit-column-input ", (e) => {
-      if (e.key === "Enter") {
-        this.saveTitle(e);
-      } else if (e.key === "Escape") {
-        this.cancelEdit(e);
-      }
-    });
-
-    document.addEventListener("click", this.handleClickOutside.bind(this));
   }
 
-  removeEventListeners() {
-    document.removeEventListener("click", this.handleClickOutside.bind(this));
-  }
-
-  handleClickOutside(e) {
-    const $editableTitle = this.$target.querySelector(".editable-title");
-    const $input = this.$target.querySelector(".edit-column-input");
-
-    if (
-      $input &&
-      !$input.contains(e.target) &&
-      !$editableTitle.contains(e.target)
-    ) {
-      this.saveTitle({ target: $input });
+  handleTaskAddBtn() {
+    const { isAddingTask } = this.state;
+    if (isAddingTask) {
+      this.setState({ ...this.state, isAddingTask: false }, () => {
+        this.hideTaskInputForm();
+      });
+    } else {
+      this.setState({ ...this.state, isAddingTask: true }, () => {
+        this.renderTaskInputForm();
+      });
     }
+  }
+
+  removeColumn() {
+    this.props.deleteColumn(this.props.columnId);
   }
 
   editTitle(e) {
@@ -183,6 +160,7 @@ export default class Column extends Component {
       $title.innerHTML = `<input type="text" class="edit-column-input" value="${currentTitle}">`;
       const $input = $title.querySelector(".edit-column-input");
       $input.focus();
+      document.addEventListener("click", this.handleGlobalClick.bind(this));
     }
   }
 
@@ -191,29 +169,31 @@ export default class Column extends Component {
     const $title = $input.parentElement;
     const newTitle = $input.value.trim();
 
-    if (newTitle && newTitle !== $title.textContent.trim()) {
+    if (newTitle && newTitle !== this.props.title) {
       this.updateTitle(newTitle);
+      $title.innerHTML = newTitle;
     } else {
-      this.cancelEdit(e);
+      this.cancelTitleEdit(e);
     }
     this.$target.classList.remove("editing");
+    document.removeEventListener("click", this.handleGlobalClick.bind(this));
   }
 
-  cancelEdit(e) {
+  handleGlobalClick(e) {
+    const $input = this.$target.querySelector(".edit-column-input");
+
+    if ($input && !$input.contains(e.target)) {
+      this.saveTitle({ target: $input });
+    }
+  }
+
+  cancelTitleEdit(e) {
     const $input = e.target;
     const $title = $input.parentElement;
     $title.innerHTML = $title.querySelector(".edit-column-input").value.trim();
   }
 
   async updateTitle(newTitle) {
-    try {
-      this.props.updateColumn(this.props.columnId, newTitle);
-    } catch (error) {
-      console.error(error);
-    }
-  }
-
-  destroy() {
-    this.removeEventListeners();
+    this.props.updateColumn(this.props.columnId, newTitle);
   }
 }

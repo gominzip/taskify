@@ -151,7 +151,6 @@ export default class App extends Component {
           col.id === columnId ? { ...col, title: updatedColumn.title } : col
         ),
       });
-      console.log(this.state);
     } catch (error) {
       console.error(error);
     }
