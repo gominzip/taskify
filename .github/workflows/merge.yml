@@ -3,6 +3,7 @@ name: "PR merge on time v3.2 by crong"
 on:
   schedule:
     - cron: "0 15 * * 1-5"
+    - cron: "30 16 * * 1-5"
   workflow_dispatch:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
@@ -70,6 +71,18 @@ jobs:
                 })
                 continue;
              }
+
+             const hasSkipLabel = node.labels.nodes.some(label => label.name.toLowerCase() === 'review');
+             if (hasSkipLabel) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: node.number,
+                body: `라벨에 review가 있어 자동 병합을 스킵합니다.`
+              });
+              continue;
+            }
+             
              if (node.reviews.nodes.length && node.reviews.nodes[0].state === "CHANGES_REQUESTED") {
                 //add comment
                 await github.rest.issues.createComment({
