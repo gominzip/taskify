@@ -1,6 +1,6 @@
 import Component from "../core/Component.js";
-import Task from "./Task.js";
 import TaskAddForm from "./TaskAddForm.js";
+import TaskList from "./TaskList.js";
 
 export default class Column extends Component {
   setup() {
@@ -29,31 +29,27 @@ export default class Column extends Component {
 
   mounted() {
     this.renderTasks();
-  }
-
-  renderTasks() {
-    const $taskList = this.$target.querySelector(
-      '[data-component="task-list"]'
-    );
-    $taskList.innerHTML = "";
-
-    this.state.tasks.forEach((task) => {
-      const $taskContainer = document.createElement("div");
-      $taskContainer.className = "task-item-wrapper";
-      $taskContainer.draggable = "true";
-      $taskList.appendChild($taskContainer);
-
-      new Task($taskContainer, {
-        ...task,
-        deleteTask: this.props.deleteTask,
-        updateTaskContent: this.props.updateTaskContent,
-        moveTask: this.props.moveTask,
-      });
-    });
-
     if (this.state.isAddingTask) {
       this.renderTaskAddForm();
     }
+  }
+
+  renderTasks() {
+    const $taskListContainer = this.$target.querySelector(
+      '[data-component="task-list"]'
+    );
+    $taskListContainer.innerHTML = "";
+
+    const { tasks, columnId, deleteTask, updateTaskContent, moveTask } =
+      this.props;
+
+    new TaskList($taskListContainer, {
+      tasks,
+      columnId,
+      deleteTask,
+      updateTaskContent,
+      moveTask,
+    });
   }
 
   renderTaskAddForm() {
@@ -69,6 +65,12 @@ export default class Column extends Component {
     });
   }
 
+  setEvent() {
+    this.addEvent("click", ".task-add-btn", this.toggleTaskAddForm.bind(this));
+    this.addEvent("click", ".column-remove-btn", this.removeColumn.bind(this));
+    this.addEvent("dblclick", ".editable-title", this.editTitle.bind(this));
+  }
+
   hideTaskInputForm() {
     this.setState({ ...this.state, isAddingTask: false });
   }
@@ -80,12 +82,6 @@ export default class Column extends Component {
       authorId: 2,
     });
     this.hideTaskInputForm();
-  }
-
-  setEvent() {
-    this.addEvent("click", ".task-add-btn", this.toggleTaskAddForm.bind(this));
-    this.addEvent("click", ".column-remove-btn", this.removeColumn.bind(this));
-    this.addEvent("dblclick", ".editable-title", this.editTitle.bind(this));
   }
 
   toggleTaskAddForm() {
