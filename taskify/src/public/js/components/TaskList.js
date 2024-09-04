@@ -98,8 +98,8 @@ export default class TaskList extends Component {
 
     if (taskList && draggingItem) {
       const columnWrapper = taskList.closest(".task-column-wrapper");
-      const oldColumnId = draggingItem.dataset.columnId;
       const newColumnId = columnWrapper ? columnWrapper.dataset.columnId : null;
+      const oldColumnId = draggingItem.dataset.columnId;
       const taskId = draggingItem.dataset.id;
 
       if (newColumnId) {
