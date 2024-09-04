@@ -10,7 +10,7 @@ class TaskStorage {
     const task = tasks[0];
 
     const [users] = await pool.query("SELECT name FROM users WHERE id = ?", [
-      task.authorId,
+      task.author_id,
     ]);
     const userName = users.length > 0 ? users[0].name : "Unknown";
 
@@ -21,11 +21,11 @@ class TaskStorage {
   }
 
   async addTask(newTask) {
-    const { columnId, title, description, authorId } = newTask;
+    const { column_id, title, description, author_id } = newTask;
 
     const [tasksRows] = await pool.query(
-      "SELECT task_order FROM tasks WHERE columnId = ?",
-      [columnId]
+      "SELECT task_order FROM tasks WHERE column_id = ?",
+      [column_id]
     );
     let highestOrder = 0;
     if (tasksRows.length > 0) {
@@ -33,8 +33,8 @@ class TaskStorage {
     }
 
     const [result] = await pool.query(
-      "INSERT INTO tasks (columnId, title, description, authorId, task_order, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, NOW(), NOW())",
-      [columnId, title, description, authorId, highestOrder + 1]
+      "INSERT INTO tasks (column_id, title, description, author_id, task_order, created_at, updated_at) VALUES (?, ?, ?, ?, ?, NOW(), NOW())",
+      [column_id, title, description, author_id, highestOrder + 1]
     );
 
     const newTaskId = result.insertId;
@@ -52,21 +52,21 @@ class TaskStorage {
     }
 
     const task = taskRows[0];
-    const columnId = task.columnId;
+    const column_id = task.column_id;
     const taskOrder = task.task_order;
 
     await pool.query("DELETE FROM tasks WHERE id = ?", [id]);
 
     // 컬럼 내 우선순위 조정
     await pool.query(
-      "UPDATE tasks SET task_order = task_order - 1 WHERE columnId = ? AND task_order > ?",
-      [columnId, taskOrder]
+      "UPDATE tasks SET task_order = task_order - 1 WHERE column_id = ? AND task_order > ?",
+      [column_id, taskOrder]
     );
   }
 
   /** 테스크 업데이트 */
   async updateTask(id, updates) {
-    const { columnId, task_order, title, description } = updates;
+    const { column_id, task_order, title, description } = updates;
 
     const currentTask = await this.getTask(id);
 
@@ -74,15 +74,15 @@ class TaskStorage {
       throw new Error(`ID가 '${id}'인 테스크를 찾을 수 없습니다.`);
     }
 
-    const oldColumnId = currentTask.columnId;
+    const oldColumnId = currentTask.column_id;
     const oldOrder = currentTask.task_order;
 
-    if (columnId && oldColumnId !== columnId) {
+    if (column_id && oldColumnId !== column_id) {
       await this.#updateOrderInOldColumn(oldColumnId, oldOrder);
-      await this.#updateOrderInNewColumn(columnId, task_order);
+      await this.#updateOrderInNewColumn(column_id, task_order);
       await this.#updateTask(
         id,
-        columnId,
+        column_id,
         task_order ?? oldOrder,
         title,
         description
@@ -100,47 +100,47 @@ class TaskStorage {
   }
 
   /** 이전 컬럼에서 우선순위 조정 */
-  async #updateOrderInOldColumn(columnId, oldOrder) {
+  async #updateOrderInOldColumn(column_id, oldOrder) {
     await pool.query(
-      "UPDATE tasks SET task_order = task_order - 1 WHERE columnId = ? AND task_order > ?",
-      [columnId, oldOrder]
+      "UPDATE tasks SET task_order = task_order - 1 WHERE column_id = ? AND task_order > ?",
+      [column_id, oldOrder]
     );
   }
 
   /** 새 컬럼에서 우선순위 조정 */
-  async #updateOrderInNewColumn(columnId, newOrder) {
+  async #updateOrderInNewColumn(column_id, newOrder) {
     if (newOrder === undefined) {
       return;
     }
     await pool.query(
-      "UPDATE tasks SET task_order = task_order + 1 WHERE columnId = ? AND task_order >= ?",
-      [columnId, newOrder]
+      "UPDATE tasks SET task_order = task_order + 1 WHERE column_id = ? AND task_order >= ?",
+      [column_id, newOrder]
     );
   }
 
   /** 컬럼 내부에서 우선순위 조정 */
-  async #updateOrderInColumn(columnId, oldOrder, newOrder) {
+  async #updateOrderInColumn(column_id, oldOrder, newOrder) {
     if (newOrder === undefined) {
       return;
     }
     if (newOrder > oldOrder) {
       await pool.query(
-        "UPDATE tasks SET task_order = task_order - 1 WHERE columnId = ? AND task_order > ? AND task_order <= ?",
-        [columnId, oldOrder, newOrder]
+        "UPDATE tasks SET task_order = task_order - 1 WHERE column_id = ? AND task_order > ? AND task_order <= ?",
+        [column_id, oldOrder, newOrder]
       );
     } else {
       await pool.query(
-        "UPDATE tasks SET task_order = task_order + 1 WHERE columnId = ? AND task_order >= ? AND task_order < ?",
-        [columnId, newOrder, oldOrder]
+        "UPDATE tasks SET task_order = task_order + 1 WHERE column_id = ? AND task_order >= ? AND task_order < ?",
+        [column_id, newOrder, oldOrder]
       );
     }
   }
 
   /** 테스크 업데이트 */
-  async #updateTask(taskId, columnId, taskOrder, title, description) {
+  async #updateTask(taskId, column_id, taskOrder, title, description) {
     await pool.query(
-      "UPDATE tasks SET columnId = ?, task_order = ?, title = COALESCE(?, title), description = COALESCE(?, description), updatedAt = NOW() WHERE id = ?",
-      [columnId, taskOrder, title, description, taskId]
+      "UPDATE tasks SET column_id = ?, task_order = ?, title = COALESCE(?, title), description = COALESCE(?, description), updated_at = NOW() WHERE id = ?",
+      [column_id, taskOrder, title, description, taskId]
     );
   }
 }

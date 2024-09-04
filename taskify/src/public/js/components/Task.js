@@ -60,7 +60,7 @@ export default class Task extends Component {
   }
 
   handleRemoveTask() {
-    this.props.deleteTask(this.props.columnId, this.props.id);
+    this.props.deleteTask(this.props.column_id, this.props.id);
   }
 
   toggleEditMode() {
@@ -87,7 +87,7 @@ export default class Task extends Component {
   }
 
   async handleSaveContentEdit(title, description) {
-    await this.props.updateTaskContent(this.props.columnId, this.props.id, {
+    await this.props.updateTaskContent(this.props.column_id, this.props.id, {
       title,
       description,
     });

@@ -9,12 +9,12 @@ export async function getTask(taskId) {
   });
 }
 
-export async function createTask(columnId, task) {
+export async function createTask(column_id, task) {
   return handleAsync(async () => {
     const response = await fetch(`/task`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ columnId, ...task }),
+      body: JSON.stringify({ column_id, ...task }),
     });
     if (!response.ok) throw new Error(`테스크 생성 실패`);
     const data = await response.json();

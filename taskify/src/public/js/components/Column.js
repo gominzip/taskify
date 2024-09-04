@@ -40,12 +40,12 @@ export default class Column extends Component {
     );
     $taskListContainer.innerHTML = "";
 
-    const { tasks, columnId, deleteTask, updateTaskContent, moveTask } =
+    const { tasks, column_id, deleteTask, updateTaskContent, moveTask } =
       this.props;
 
     new TaskList($taskListContainer, {
       tasks,
-      columnId,
+      column_id,
       deleteTask,
       updateTaskContent,
       moveTask,
@@ -76,10 +76,10 @@ export default class Column extends Component {
   }
 
   saveNewTask(title, description) {
-    this.props.addTask(this.props.columnId, {
+    this.props.addTask(this.props.column_id, {
       title,
       description,
-      authorId: 2,
+      author_id: 2,
     });
     this.hideTaskInputForm();
   }
@@ -89,7 +89,7 @@ export default class Column extends Component {
   }
 
   removeColumn() {
-    this.props.deleteColumn(this.props.columnId);
+    this.props.deleteColumn(this.props.column_id);
   }
 
   editTitle(e) {
@@ -133,6 +133,6 @@ export default class Column extends Component {
   }
 
   async updateTitle(newTitle) {
-    this.props.updateColumn(this.props.columnId, newTitle);
+    this.props.updateColumn(this.props.column_id, newTitle);
   }
 }

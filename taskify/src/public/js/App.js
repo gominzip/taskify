@@ -66,12 +66,12 @@ export default class App extends Component {
     columns.forEach((column) => {
       const $columnContainer = document.createElement("div");
       $columnContainer.className = "task-column-wrapper";
-      $columnContainer.dataset.columnId = column.id;
+      $columnContainer.dataset.column_id = column.id;
 
       new Column($columnContainer, {
         title: column.title,
         tasks: column.tasks || [],
-        columnId: column.id,
+        column_id: column.id,
         addTask: this.addTask.bind(this),
         deleteTask: this.deleteTask.bind(this),
         updateTaskContent: this.updateTaskContent.bind(this),
@@ -90,25 +90,25 @@ export default class App extends Component {
     });
   }
 
-  updateColumnState(columnId, updateFn) {
+  updateColumnState(column_id, updateFn) {
     this.setState({
       columns: this.state.columns.map((col) =>
-        col.id === columnId ? updateFn(col) : col
+        col.id === column_id ? updateFn(col) : col
       ),
     });
   }
 
-  async addTask(columnId, task) {
-    const newTask = await handleAsync(() => createTask(columnId, task));
-    this.updateColumnState(columnId, (col) => ({
+  async addTask(column_id, task) {
+    const newTask = await handleAsync(() => createTask(column_id, task));
+    this.updateColumnState(column_id, (col) => ({
       ...col,
       tasks: [...col.tasks, newTask],
     }));
   }
 
-  async updateTaskContent(columnId, taskId, updates) {
+  async updateTaskContent(column_id, taskId, updates) {
     const updatedTask = await handleAsync(() => updateTask(taskId, updates));
-    this.updateColumnState(columnId, (col) => ({
+    this.updateColumnState(column_id, (col) => ({
       ...col,
       tasks: col.tasks.map((task) => (task.id === taskId ? updatedTask : task)),
     }));
@@ -130,9 +130,9 @@ export default class App extends Component {
     });
   }
 
-  async deleteTask(columnId, taskId) {
+  async deleteTask(column_id, taskId) {
     await handleAsync(() => deleteTask(taskId));
-    this.updateColumnState(columnId, (col) => ({
+    this.updateColumnState(column_id, (col) => ({
       ...col,
       tasks: col.tasks.filter((task) => task.id !== taskId),
     }));
@@ -145,20 +145,20 @@ export default class App extends Component {
     });
   }
 
-  async updateColumn(columnId, newTitle) {
+  async updateColumn(column_id, newTitle) {
     const updatedColumn = await handleAsync(() =>
-      updateColumnTitle(columnId, newTitle)
+      updateColumnTitle(column_id, newTitle)
     );
-    this.updateColumnState(columnId, (col) => ({
+    this.updateColumnState(column_id, (col) => ({
       ...col,
       title: updatedColumn.title,
     }));
   }
 
-  async deleteColumn(columnId) {
-    await handleAsync(() => deleteColumn(columnId));
+  async deleteColumn(column_id) {
+    await handleAsync(() => deleteColumn(column_id));
     this.setState({
-      columns: this.state.columns.filter((col) => col.id !== columnId),
+      columns: this.state.columns.filter((col) => col.id !== column_id),
     });
   }
 }

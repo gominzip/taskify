@@ -23,7 +23,7 @@ class ColumnStorage {
     const column = rows[0];
 
     const [tasksRows] = await pool.query(
-      "SELECT * FROM tasks WHERE columnId = ? ORDER BY task_order ASC",
+      "SELECT * FROM tasks WHERE column_id = ? ORDER BY task_order ASC",
       [id]
     );
 
@@ -72,7 +72,7 @@ class ColumnStorage {
 
   async deleteColumn(id) {
     const [tasksRows] = await pool.query(
-      "SELECT id FROM tasks WHERE columnId = ?",
+      "SELECT id FROM tasks WHERE column_id = ?",
       [id]
     );
 

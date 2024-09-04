@@ -12,7 +12,7 @@ export default class TaskList extends Component {
   }
 
   renderTasks() {
-    const { tasks, columnId, deleteTask, updateTaskContent, moveTask } =
+    const { tasks, column_id, deleteTask, updateTaskContent, moveTask } =
       this.props;
     const $taskList = this.$target;
 
@@ -22,7 +22,7 @@ export default class TaskList extends Component {
       const $taskContainer = document.createElement("div");
       $taskContainer.className = "task-item-wrapper";
       $taskContainer.dataset.id = task.id;
-      $taskContainer.dataset.columnId = columnId;
+      $taskContainer.dataset.column_id = column_id;
       $taskContainer.draggable = "true";
       $taskList.appendChild($taskContainer);
 
@@ -98,8 +98,8 @@ export default class TaskList extends Component {
 
     if (taskList && draggingItem) {
       const columnWrapper = taskList.closest(".task-column-wrapper");
-      const newColumnId = columnWrapper ? columnWrapper.dataset.columnId : null;
-      const oldColumnId = draggingItem.dataset.columnId;
+      const newColumnId = columnWrapper ? columnWrapper.dataset.column_id : null;
+      const oldColumnId = draggingItem.dataset.column_id;
       const taskId = draggingItem.dataset.id;
 
       if (newColumnId) {
@@ -124,7 +124,7 @@ export default class TaskList extends Component {
 
   async handleTaskMove(taskId, oldColumnId, newColumnId, newTaskOrder) {
     await this.props.moveTask(oldColumnId, newColumnId, taskId, {
-      columnId: newColumnId,
+      column_id: newColumnId,
       task_order: newTaskOrder,
     });
   }
