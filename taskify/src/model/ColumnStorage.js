@@ -3,7 +3,9 @@ import taskStorage from "../model/TaskStorage.js";
 
 class ColumnStorage {
   async getAllColumnsWithTasks() {
-    const [columns] = await pool.query("SELECT * FROM columns");
+    const [columns] = await pool.query(
+      "SELECT * FROM columns WHERE is_deleted = 0"
+    );
 
     const columnsWithTasks = await Promise.all(
       columns.map(async (column) => {
@@ -15,7 +17,10 @@ class ColumnStorage {
   }
 
   async getColumn(id) {
-    const [rows] = await pool.query("SELECT * FROM columns WHERE id = ?", [id]);
+    const [rows] = await pool.query(
+      "SELECT * FROM columns WHERE id = ? AND is_deleted = 0",
+      [id]
+    );
     if (rows.length === 0) {
       throw new Error(`ID가 '${id}'인 컬럼을 찾을 수 없습니다.`);
     }
@@ -23,7 +28,7 @@ class ColumnStorage {
     const column = rows[0];
 
     const [tasksRows] = await pool.query(
-      "SELECT * FROM tasks WHERE columnId = ? ORDER BY task_order ASC",
+      "SELECT * FROM tasks WHERE column_id = ? AND is_deleted = 0 ORDER BY task_order ASC",
       [id]
     );
 
@@ -42,7 +47,7 @@ class ColumnStorage {
 
   async addColumn(title) {
     const [result] = await pool.query(
-      "INSERT INTO columns (title) VALUES (?)",
+      "INSERT INTO columns (title, is_deleted) VALUES (?, 0)",
       [title]
     );
 
@@ -55,7 +60,7 @@ class ColumnStorage {
 
   async updateColumn(id, title) {
     const [result] = await pool.query(
-      "UPDATE columns SET title = ? WHERE id = ?",
+      "UPDATE columns SET title = ? WHERE id = ? AND is_deleted = 0",
       [title, id]
     );
 
@@ -64,33 +69,41 @@ class ColumnStorage {
     }
 
     const [updatedColumn] = await pool.query(
-      "SELECT * FROM columns WHERE id = ?",
+      "SELECT * FROM columns WHERE id = ? AND is_deleted = 0",
       [id]
     );
     return updatedColumn[0];
   }
 
   async deleteColumn(id) {
-    const [tasksRows] = await pool.query(
-      "SELECT id FROM tasks WHERE columnId = ?",
-      [id]
-    );
+    const connection = await pool.getConnection();
+    try {
+      await connection.beginTransaction();
 
-    const [columnRows] = await pool.query(
-      "SELECT id FROM columns WHERE id = ?",
-      [id]
-    );
+      const [tasksRows] = await connection.query(
+        "SELECT id FROM tasks WHERE column_id = ? AND is_deleted = 0",
+        [id]
+      );
 
-    if (columnRows.length === 0) {
-      throw new Error(`ID가 '${id}'인 컬럼을 찾을 수 없습니다.`);
+      await connection.query("UPDATE columns SET is_deleted = 1 WHERE id = ?", [
+        id,
+      ]);
+
+      if (tasksRows.length > 0) {
+        const taskIds = tasksRows.map((task) => task.id);
+        await connection.query(
+          "UPDATE tasks SET is_deleted = 1 WHERE id IN (?)",
+          [taskIds]
+        );
+      }
+
+      await connection.commit();
+    } catch (error) {
+      await connection.rollback();
+      throw error;
+    } finally {
+      connection.release();
     }
-
-    const taskIds = tasksRows.map((task) => task.id);
-    if (taskIds.length > 0) {
-      await pool.query("DELETE FROM tasks WHERE id IN (?)", [taskIds]);
-    }
-
-    await pool.query("DELETE FROM columns WHERE id = ?", [id]);
   }
 }
 

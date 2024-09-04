@@ -9,10 +9,10 @@ export async function getAllColumns() {
   });
 }
 
-export async function getColumn(columnId) {
+export async function getColumn(column_id) {
   return handleAsync(async () => {
-    const response = await fetch(`/column/${columnId}`);
-    if (!response.ok) throw new Error(`컬럼 ${columnId} 패칭 실패`);
+    const response = await fetch(`/column/${column_id}`);
+    if (!response.ok) throw new Error(`컬럼 ${column_id} 패칭 실패`);
     const data = await response.json();
     return data.data;
   });
@@ -31,9 +31,9 @@ export async function createColumn(title) {
   });
 }
 
-export async function updateColumnTitle(columnId, newTitle) {
+export async function updateColumnTitle(column_id, newTitle) {
   return handleAsync(async () => {
-    const response = await fetch(`/column/${columnId}`, {
+    const response = await fetch(`/column/${column_id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ title: newTitle }),
@@ -44,9 +44,9 @@ export async function updateColumnTitle(columnId, newTitle) {
   });
 }
 
-export async function deleteColumn(columnId) {
+export async function deleteColumn(column_id) {
   return handleAsync(async () => {
-    const response = await fetch(`/column/${columnId}`, { method: "DELETE" });
+    const response = await fetch(`/column/${column_id}`, { method: "DELETE" });
     if (!response.ok) throw new Error(`컬럼 ${id} 삭제 실패`);
     return await response.json();
   });
