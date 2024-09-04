@@ -1,18 +1,17 @@
 export function findClosestSibling(siblings, clientY) {
-  let closestSibling = null;
-  let minDistance = Number.POSITIVE_INFINITY;
+  return siblings.reduce(
+    (closest, sibling) => {
+      const siblingCenter = sibling.offsetTop + sibling.offsetHeight / 2;
+      const distance = Math.abs(clientY - siblingCenter);
 
-  siblings.forEach((sibling) => {
-    const siblingCenter = sibling.offsetTop + sibling.offsetHeight / 2;
-    const distance = Math.abs(clientY - siblingCenter);
+      if (distance < closest.minDistance) {
+        return { sibling, minDistance: distance };
+      }
 
-    if (distance < minDistance) {
-      minDistance = distance;
-      closestSibling = sibling;
-    }
-  });
-
-  return closestSibling;
+      return closest;
+    },
+    { sibling: null, minDistance: Number.POSITIVE_INFINITY }
+  ).sibling;
 }
 
 export function insertDraggingItem(
@@ -23,14 +22,8 @@ export function insertDraggingItem(
 ) {
   const siblingCenter =
     closestSibling.offsetTop + closestSibling.offsetHeight / 2;
-  if (clientY <= siblingCenter) {
-    taskList.insertBefore(draggingItem, closestSibling);
-  } else {
-    const nextSibling = closestSibling.nextSibling;
-    if (nextSibling) {
-      taskList.insertBefore(draggingItem, nextSibling);
-    } else {
-      taskList.appendChild(draggingItem);
-    }
-  }
+  const insertBeforeNode =
+    clientY <= siblingCenter ? closestSibling : closestSibling.nextSibling;
+
+  taskList.insertBefore(draggingItem, insertBeforeNode || null);
 }

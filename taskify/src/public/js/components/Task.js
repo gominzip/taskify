@@ -40,9 +40,10 @@ export default class Task extends Component {
   }
 
   renderTaskEditForm() {
+    const { title, description } = this.props;
     new TaskEditForm(this.$target, {
-      title: this.props.title,
-      description: this.props.description,
+      title,
+      description,
       onCancel: this.handleCancelEdit.bind(this),
       onSave: this.handleSaveContentEdit.bind(this),
     });
@@ -56,7 +57,7 @@ export default class Task extends Component {
     );
     this.addEvent("click", ".task-edit-btn", this.toggleEditMode.bind(this));
 
-    this.$target.addEventListener("dragstart", this.handleDragStart.bind(this));
+    this.$target.addEventListener("dragstart", this.handleDragStart);
     this.$target.addEventListener("dragend", this.handleDragEnd.bind(this));
     this.$target.addEventListener("dragover", this.handleDragOver.bind(this));
     this.$target.addEventListener("dragenter", (e) => e.preventDefault());
