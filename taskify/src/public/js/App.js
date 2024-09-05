@@ -7,8 +7,8 @@ import {
   updateColumnTitle,
 } from "./apis/columnAPI.js";
 import { createTask, deleteTask, updateTask } from "./apis/taskAPI.js";
-import Column from "./components/Column.js";
 import Component from "./core/Component.js";
+import ColumnList from "./components/ColumnList.js";
 
 export default class App extends Component {
   setup() {
@@ -59,28 +59,17 @@ export default class App extends Component {
   }
 
   renderColumns() {
-    const { columns } = this.state;
-    const $taskBoard = this.$target.querySelector("#task-board");
-    $taskBoard.innerHTML = "";
+    const $taskBoardContainer = this.$target.querySelector("#task-board");
+    $taskBoardContainer.innerHTML = "";
 
-    columns.forEach((column) => {
-      const $columnContainer = document.createElement("div");
-      $columnContainer.className = "task-column-wrapper";
-      $columnContainer.dataset.column_id = column.id;
-
-      new Column($columnContainer, {
-        title: column.title,
-        tasks: column.tasks || [],
-        column_id: column.id,
-        addTask: this.addTask.bind(this),
-        deleteTask: this.deleteTask.bind(this),
-        updateTaskContent: this.updateTaskContent.bind(this),
-        moveTask: this.moveTask.bind(this),
-        deleteColumn: this.deleteColumn.bind(this),
-        updateColumn: this.updateColumn.bind(this),
-      });
-
-      $taskBoard.appendChild($columnContainer);
+    new ColumnList($taskBoardContainer, {
+      columns: this.state.columns,
+      addTask: this.addTask.bind(this),
+      deleteTask: this.deleteTask.bind(this),
+      updateTaskContent: this.updateTaskContent.bind(this),
+      moveTask: this.moveTask.bind(this),
+      deleteColumn: this.deleteColumn.bind(this),
+      updateColumn: this.updateColumn.bind(this),
     });
   }
 
