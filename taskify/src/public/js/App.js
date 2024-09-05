@@ -9,6 +9,8 @@ import {
 import { createTask, deleteTask, updateTask } from "./apis/taskAPI.js";
 import Component from "./core/Component.js";
 import ColumnList from "./components/ColumnList.js";
+import Header from "./components/Header.js";
+import FAB from "./components/FAB.js";
 
 export default class App extends Component {
   setup() {
@@ -19,28 +21,9 @@ export default class App extends Component {
 
   template() {
     return `
-      <header>
-        <div class="header-left-content">
-          <p>TASKIFY</p>
-          <button class="sort-btn">
-            <span class="material-symbols-outlined">swap_vert</span>
-            <span class="sort-btn-text">생성 순</span>
-          </button>
-        </div>
-        <button id="history-btn" class="material-symbols-outlined">history</button>
-      </header>
-      <main id="task-board"></main>
-      <div class="fixed-action-buttons">
-        <button class="undo-btn" aria-label="Undo">
-          <span class="material-symbols-outlined">undo</span>
-        </button>
-        <button class="redo-btn" aria-label="Redo">
-          <span class="material-symbols-outlined">redo</span>
-        </button>
-        <button class="column-add-btn" aria-label="Add Column">
-          <span class="material-symbols-outlined">add</span>
-        </button>
-      </div>
+      <header id="header-container"></header>
+      <main id="task-board-container"></main>
+      <section id="fab-container"></section>
     `;
   }
 
@@ -59,9 +42,15 @@ export default class App extends Component {
   }
 
   renderColumns() {
-    const $taskBoardContainer = this.$target.querySelector("#task-board");
+    const $headerContainer = this.$target.querySelector("#header-container");
+    const $taskBoardContainer = this.$target.querySelector(
+      "#task-board-container"
+    );
+    const $fabContainer = this.$target.querySelector("#fab-container");
+
     $taskBoardContainer.innerHTML = "";
 
+    new Header($headerContainer);
     new ColumnList($taskBoardContainer, {
       columns: this.state.columns,
       addTask: this.addTask.bind(this),
@@ -71,6 +60,7 @@ export default class App extends Component {
       deleteColumn: this.deleteColumn.bind(this),
       updateColumn: this.updateColumn.bind(this),
     });
+    new FAB($fabContainer);
   }
 
   setEvent() {

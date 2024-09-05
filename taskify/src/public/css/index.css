@@ -1,4 +1,4 @@
-header {
+#header-container {
   display: flex;
   justify-content: space-between;
   width: 100vw;
@@ -40,7 +40,7 @@ header {
   color: var(--text-bold);
 }
 
-.fixed-action-buttons {
+#fab-container {
   position: fixed;
   bottom: 3rem;
   right: 3rem;
@@ -63,7 +63,7 @@ header {
   background-color: var(--surface-default);
 }
 
-#task-board {
+#task-board-container {
   overflow-x: visible;
   min-width: 100%;
   display: flex;
