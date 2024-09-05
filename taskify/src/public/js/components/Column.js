@@ -1,10 +1,16 @@
+import { handleAsync } from "../../utils/handleAsync.js";
+import { deleteColumn, updateColumnTitle } from "../apis/columnAPI.js";
+import { createTask } from "../apis/taskAPI.js";
+import columnStore from "../stores/ColumnStore.js";
 import Component from "../core/Component.js";
 import TaskAddForm from "./TaskAddForm.js";
 import TaskList from "./TaskList.js";
+import ActionTypes from "../constants/actionTypes.js";
 
 export default class Column extends Component {
   setup() {
     this.state = { ...this.props, isAddingTask: false };
+    this.handleGlobalClickBound = this.handleGlobalClick.bind(this);
   }
 
   template() {
@@ -40,15 +46,9 @@ export default class Column extends Component {
     );
     $taskListContainer.innerHTML = "";
 
-    const { tasks, column_id, deleteTask, updateTaskContent, moveTask } =
-      this.props;
-
     new TaskList($taskListContainer, {
-      tasks,
-      column_id,
-      deleteTask,
-      updateTaskContent,
-      moveTask,
+      tasks: this.state.tasks,
+      column_id: this.state.id,
     });
   }
 
@@ -67,7 +67,7 @@ export default class Column extends Component {
 
   setEvent() {
     this.addEvent("click", ".task-add-btn", this.toggleTaskAddForm.bind(this));
-    this.addEvent("click", ".column-remove-btn", this.removeColumn.bind(this));
+    this.addEvent("click", ".column-remove-btn", this.deleteColumn.bind(this));
     this.addEvent("dblclick", ".editable-title", this.editTitle.bind(this));
   }
 
@@ -76,7 +76,7 @@ export default class Column extends Component {
   }
 
   saveNewTask(title, description) {
-    this.props.addTask(this.props.column_id, {
+    this.addTask({
       title,
       description,
       author_id: 2,
@@ -88,10 +88,6 @@ export default class Column extends Component {
     this.setState({ ...this.state, isAddingTask: !this.state.isAddingTask });
   }
 
-  removeColumn() {
-    this.props.deleteColumn(this.props.column_id);
-  }
-
   editTitle(e) {
     const $title = e.target;
     const currentTitle = $title.textContent.trim();
@@ -101,7 +97,7 @@ export default class Column extends Component {
       $title.innerHTML = `<input type="text" class="edit-column-input" value="${currentTitle}">`;
       const $input = $title.querySelector(".edit-column-input");
       $input.focus();
-      document.addEventListener("click", this.handleGlobalClick.bind(this));
+      document.addEventListener("click", this.handleGlobalClickBound);
     }
   }
 
@@ -110,13 +106,12 @@ export default class Column extends Component {
     const newTitle = $input.value.trim();
 
     if (newTitle && newTitle !== this.props.title) {
-      this.updateTitle(newTitle);
-      $title.innerHTML = newTitle;
+      this.updateColumn(newTitle);
     } else {
       this.cancelTitleEdit(e);
     }
     this.$target.classList.remove("editing");
-    document.removeEventListener("click", this.handleGlobalClick.bind(this));
+    document.removeEventListener("click", this.handleGlobalClickBound);
   }
 
   handleGlobalClick(e) {
@@ -128,11 +123,32 @@ export default class Column extends Component {
   }
 
   cancelTitleEdit() {
-    this.$target.querySelector(".editable-title").textContent =
-      this.props.title;
+    const $title = this.$target.querySelector(".editable-title");
+    $title.textContent = this.state.title;
+    this.$target.classList.remove("editing");
   }
 
-  async updateTitle(newTitle) {
-    this.props.updateColumn(this.props.column_id, newTitle);
+  async addTask(task) {
+    const column_id = this.state.id;
+    const newTask = await handleAsync(() => createTask(column_id, task));
+    columnStore.updateColumnState(column_id, newTask, ActionTypes.ADD_TASK);
+  }
+
+  async updateColumn(newTitle) {
+    const column_id = this.state.id;
+    const updatedColumn = await handleAsync(() =>
+      updateColumnTitle(column_id, newTitle)
+    );
+    columnStore.updateColumnState(
+      column_id,
+      updatedColumn,
+      ActionTypes.UPDATE_COLUMN_TITLE
+    );
+  }
+
+  async deleteColumn() {
+    const column_id = this.state.id;
+    await handleAsync(() => deleteColumn(column_id));
+    columnStore.updateColumnState(column_id, null, "deleteColumn");
   }
 }

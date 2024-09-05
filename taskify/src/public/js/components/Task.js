@@ -1,5 +1,9 @@
+import { handleAsync } from "../../utils/handleAsync.js";
+import { deleteTask, updateTask } from "../apis/taskAPI.js";
+import columnStore from "../stores/ColumnStore.js";
 import Component from "../core/Component.js";
 import TaskEditForm from "./TaskEditForm.js";
+import ActionTypes from "../constants/actionTypes.js";
 
 export default class Task extends Component {
   setup() {
@@ -41,26 +45,18 @@ export default class Task extends Component {
       title,
       description,
       onCancel: this.handleCancelEdit.bind(this),
-      onSave: this.handleSaveContentEdit.bind(this),
+      onSave: this.updateTaskContent.bind(this),
     });
   }
 
   setEvent() {
-    this.addEvent(
-      "click",
-      ".task-remove-btn",
-      this.handleRemoveTask.bind(this)
-    );
+    this.addEvent("click", ".task-remove-btn", this.deleteTask.bind(this));
     this.addEvent("click", ".task-edit-btn", this.toggleEditMode.bind(this));
 
     const $taskItemWrapper = this.$target;
 
     $taskItemWrapper.addEventListener("dragstart", this.handleDragStart);
     $taskItemWrapper.addEventListener("dragend", this.handleDragEnd.bind(this));
-  }
-
-  handleRemoveTask() {
-    this.props.deleteTask(this.props.column_id, this.props.id);
   }
 
   toggleEditMode() {
@@ -86,10 +82,24 @@ export default class Task extends Component {
     e.target.classList.remove("dragging");
   }
 
-  async handleSaveContentEdit(title, description) {
-    await this.props.updateTaskContent(this.props.column_id, this.props.id, {
-      title,
-      description,
-    });
+  async updateTaskContent(title, description) {
+    const { id, column_id } = this.state;
+    const updatedTask = await handleAsync(() =>
+      updateTask(id, {
+        title,
+        description,
+      })
+    );
+    columnStore.updateColumnState(
+      column_id,
+      updatedTask,
+      ActionTypes.UPDATE_TASK_CONTENT
+    );
+  }
+
+  async deleteTask() {
+    const { id, column_id } = this.state;
+    await handleAsync(() => deleteTask(id));
+    columnStore.updateColumnState(column_id, id, ActionTypes.DELETE_TASK);
   }
 }
