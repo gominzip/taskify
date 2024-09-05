@@ -1,8 +1,9 @@
 import { handleAsync } from "../../utils/handleAsync.js";
 import { deleteTask, updateTask } from "../apis/taskAPI.js";
-import columnStore from "../ColumnStore.js";
+import columnStore from "../stores/ColumnStore.js";
 import Component from "../core/Component.js";
 import TaskEditForm from "./TaskEditForm.js";
+import ActionTypes from "../constants/actionTypes.js";
 
 export default class Task extends Component {
   setup() {
@@ -89,12 +90,16 @@ export default class Task extends Component {
         description,
       })
     );
-    columnStore.updateColumnState(column_id, updatedTask, "updateTaskContent");
+    columnStore.updateColumnState(
+      column_id,
+      updatedTask,
+      ActionTypes.UPDATE_TASK_CONTENT
+    );
   }
 
   async deleteTask() {
     const { id, column_id } = this.state;
     await handleAsync(() => deleteTask(id));
-    columnStore.updateColumnState(column_id, id, "deleteTask");
+    columnStore.updateColumnState(column_id, id, ActionTypes.DELETE_TASK);
   }
 }

@@ -1,4 +1,4 @@
-import columnStore from "./ColumnStore.js";
+import columnStore from "../js/stores/ColumnStore.js";
 import { handleAsync } from "../utils/handleAsync.js";
 import { getAllColumns } from "./apis/columnAPI.js";
 import Component from "./core/Component.js";
@@ -17,7 +17,7 @@ export default class App extends Component {
 
   async mounted() {
     await this.loadColumns();
-    this.renderColumns();
+    this.renderAppLayout();
   }
 
   async loadColumns() {
@@ -27,7 +27,7 @@ export default class App extends Component {
     }
   }
 
-  renderColumns() {
+  renderAppLayout() {
     const $headerContainer = this.$target.querySelector("#header-container");
     const $taskBoardContainer = this.$target.querySelector(
       "#task-board-container"

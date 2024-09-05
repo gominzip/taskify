@@ -1,7 +1,8 @@
 import { handleAsync } from "../../utils/handleAsync.js";
 import { createColumn } from "../apis/columnAPI.js";
-import columnStore from "../ColumnStore.js";
+import columnStore from "../stores/ColumnStore.js";
 import Component from "../core/Component.js";
+import ActionTypes from "../constants/actionTypes.js";
 
 export default class FAB extends Component {
   template() {
@@ -25,7 +26,7 @@ export default class FAB extends Component {
   async handleAddColumn() {
     const newColumn = await handleAsync(() => createColumn("New Column"));
     if (newColumn) {
-      columnStore.updateColumnState(null, newColumn, "addColumn");
+      columnStore.updateColumnState(null, newColumn, ActionTypes.ADD_COLUMN);
     }
   }
 }

@@ -1,8 +1,9 @@
 import { handleAsync } from "../../utils/handleAsync.js";
 import { getTask, updateTask } from "../apis/taskAPI.js";
-import columnStore from "../ColumnStore.js";
+import columnStore from "../stores/ColumnStore.js";
 import Component from "../core/Component.js";
 import Task from "./Task.js";
+import ActionTypes from "../constants/actionTypes.js";
 
 export default class TaskList extends Component {
   setup() {
@@ -135,7 +136,7 @@ export default class TaskList extends Component {
     columnStore.updateColumnState(
       beforeColumnId,
       updatedTask,
-      "moveTask",
+      ActionTypes.MOVE_TASK,
       afterColumnId
     );
   }

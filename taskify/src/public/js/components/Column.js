@@ -1,10 +1,11 @@
 import { handleAsync } from "../../utils/handleAsync.js";
 import { deleteColumn, updateColumnTitle } from "../apis/columnAPI.js";
 import { createTask } from "../apis/taskAPI.js";
-import columnStore from "../ColumnStore.js";
+import columnStore from "../stores/ColumnStore.js";
 import Component from "../core/Component.js";
 import TaskAddForm from "./TaskAddForm.js";
 import TaskList from "./TaskList.js";
+import ActionTypes from "../constants/actionTypes.js";
 
 export default class Column extends Component {
   setup() {
@@ -128,7 +129,7 @@ export default class Column extends Component {
   async addTask(task) {
     const column_id = this.state.id;
     const newTask = await handleAsync(() => createTask(column_id, task));
-    columnStore.updateColumnState(column_id, newTask, "addTask");
+    columnStore.updateColumnState(column_id, newTask, ActionTypes.ADD_TASK);
   }
 
   async updateColumn(newTitle) {
@@ -139,7 +140,7 @@ export default class Column extends Component {
     columnStore.updateColumnState(
       column_id,
       updatedColumn,
-      "updateColumnTitle"
+      ActionTypes.UPDATE_COLUMN_TITLE
     );
   }
 

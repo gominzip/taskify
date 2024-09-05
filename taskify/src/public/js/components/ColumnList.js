@@ -1,4 +1,4 @@
-import columnStore from "../ColumnStore.js";
+import columnStore from "../stores/ColumnStore.js";
 import Component from "../core/Component.js";
 import Column from "./Column.js";
 
