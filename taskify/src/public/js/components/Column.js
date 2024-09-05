@@ -10,6 +10,7 @@ import ActionTypes from "../constants/actionTypes.js";
 export default class Column extends Component {
   setup() {
     this.state = { ...this.props, isAddingTask: false };
+    this.handleGlobalClickBound = this.handleGlobalClick.bind(this);
   }
 
   template() {
@@ -96,7 +97,7 @@ export default class Column extends Component {
       $title.innerHTML = `<input type="text" class="edit-column-input" value="${currentTitle}">`;
       const $input = $title.querySelector(".edit-column-input");
       $input.focus();
-      document.addEventListener("click", this.handleGlobalClick.bind(this));
+      document.addEventListener("click", this.handleGlobalClickBound);
     }
   }
 
@@ -110,7 +111,7 @@ export default class Column extends Component {
       this.cancelTitleEdit(e);
     }
     this.$target.classList.remove("editing");
-    document.removeEventListener("click", this.handleGlobalClick.bind(this));
+    document.removeEventListener("click", this.handleGlobalClickBound);
   }
 
   handleGlobalClick(e) {
@@ -122,8 +123,9 @@ export default class Column extends Component {
   }
 
   cancelTitleEdit() {
-    this.$target.querySelector(".editable-title").textContent =
-      this.state.title;
+    const $title = this.$target.querySelector(".editable-title");
+    $title.textContent = this.state.title;
+    this.$target.classList.remove("editing");
   }
 
   async addTask(task) {
