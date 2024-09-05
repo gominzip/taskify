@@ -1,3 +1,6 @@
+import { handleAsync } from "../../utils/handleAsync.js";
+import { getTask, updateTask } from "../apis/taskAPI.js";
+import columnStore from "../ColumnStore.js";
 import Component from "../core/Component.js";
 import Task from "./Task.js";
 
@@ -12,8 +15,7 @@ export default class TaskList extends Component {
   }
 
   renderTasks() {
-    const { tasks, column_id, deleteTask, updateTaskContent, moveTask } =
-      this.props;
+    const { tasks, column_id } = this.props;
     const $taskList = this.$target;
 
     $taskList.innerHTML = "";
@@ -28,9 +30,6 @@ export default class TaskList extends Component {
 
       new Task($taskContainer, {
         ...task,
-        deleteTask,
-        updateTaskContent,
-        moveTask,
       });
     });
   }
@@ -98,18 +97,20 @@ export default class TaskList extends Component {
 
     if (taskList && draggingItem) {
       const columnWrapper = taskList.closest(".task-column-wrapper");
-      const newColumnId = columnWrapper ? columnWrapper.dataset.column_id : null;
-      const oldColumnId = draggingItem.dataset.column_id;
+      const afterColumnId = columnWrapper
+        ? columnWrapper.dataset.column_id
+        : null;
+      const beforeColumnId = draggingItem.dataset.column_id;
       const taskId = draggingItem.dataset.id;
 
-      if (newColumnId) {
+      if (afterColumnId) {
         const taskItems = [...taskList.querySelectorAll(".task-item-wrapper")];
         const newPosition = taskItems.indexOf(draggingItem);
 
-        this.handleTaskMove(
+        this.moveTask(
           Number(taskId),
-          Number(oldColumnId),
-          Number(newColumnId),
+          Number(beforeColumnId),
+          Number(afterColumnId),
           newPosition + 1
         );
 
@@ -122,10 +123,20 @@ export default class TaskList extends Component {
     }
   }
 
-  async handleTaskMove(taskId, oldColumnId, newColumnId, newTaskOrder) {
-    await this.props.moveTask(oldColumnId, newColumnId, taskId, {
-      column_id: newColumnId,
-      task_order: newTaskOrder,
-    });
+  async moveTask(taskId, beforeColumnId, afterColumnId, newTaskOrder) {
+    await handleAsync(() =>
+      updateTask(taskId, {
+        column_id: afterColumnId,
+        task_order: newTaskOrder,
+      })
+    );
+
+    const updatedTask = await handleAsync(() => getTask(taskId));
+    columnStore.updateColumnState(
+      beforeColumnId,
+      updatedTask,
+      "moveTask",
+      afterColumnId
+    );
   }
 }
