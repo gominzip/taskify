@@ -4,6 +4,7 @@ import { getColumn } from "../apis/columnAPI.js";
 import ActionTypes from "../constants/actionTypes.js";
 import Store from "../core/Store.js";
 import { SORT_TYPES } from "../constants/sortTypes.js";
+import sortStore from "./SortStore.js";
 
 class ColumnStore extends Store {
   async updateColumnState(column_id, data, action, additionalData) {
@@ -13,7 +14,14 @@ class ColumnStore extends Store {
       action,
       additionalData
     );
-    this.setState({ columns: updatedColumns, action });
+    const currentSortType = sortStore.getState().sortType;
+
+    const sortedColumns = this.sortTasksInColumns(
+      updatedColumns,
+      currentSortType
+    );
+
+    this.setState({ columns: sortedColumns, action });
   }
 
   getUpdatedColumns(column_id, data, action, additionalData) {
@@ -38,9 +46,6 @@ class ColumnStore extends Store {
 
       case ActionTypes.DELETE_COLUMN:
         return this.deleteColumn(column_id);
-
-      case ActionTypes.SORT:
-        return this.sortTasksInColumns(data);
 
       default:
         return this.state.columns;
@@ -83,15 +88,14 @@ class ColumnStore extends Store {
     return this.state.columns.filter((col) => col.id !== column_id);
   }
 
-  sortTasksInColumns(sortType) {
-    return this.state.columns.map((col) => ({
+  sortTasksInColumns(columns, sortType) {
+    return columns.map((col) => ({
       ...col,
       tasks: sortTasksByType(col.tasks, sortType),
     }));
   }
 
   async moveTask(beforeColumnId, afterColumnId) {
-    // Get the columns before and after the move operation
     const [beforeColumn, afterColumn] = await Promise.all([
       handleAsync(() => getColumn(beforeColumnId)),
       handleAsync(() => getColumn(afterColumnId)),
