@@ -11,6 +11,7 @@ import { SORT_TYPES } from "../constants/sortTypes.js";
 export default class TaskList extends Component {
   setup() {
     this.state = { ...this.props };
+    this.renderTasks();
     sortStore.subscribe(this.handleSortChange.bind(this));
   }
 
@@ -26,7 +27,6 @@ export default class TaskList extends Component {
 
   sortTasks(sortType) {
     const { tasks } = this.state;
-
     const sortedTasks = sortTasksByType(tasks, sortType);
     this.animateTaskSorting(sortedTasks);
   }
@@ -37,13 +37,18 @@ export default class TaskList extends Component {
 
     const taskPositions = taskElements.reduce((acc, taskElement, index) => {
       const taskId = taskElement.dataset.id;
-      acc[taskId] = { element: taskElement, index };
+      if (taskId) {
+        acc[taskId] = { element: taskElement, index };
+      }
       return acc;
     }, {});
 
-    const newTaskOrder = sortedTasks.map(
-      (task) => taskPositions[task.id].element
-    );
+    const newTaskOrder = sortedTasks
+      .map((task) => {
+        const position = taskPositions[task.id];
+        return position ? position.element : null;
+      })
+      .filter((element) => element !== null);
 
     newTaskOrder.forEach((taskElement, newIndex) => {
       const { index: currentIndex } = taskPositions[taskElement.dataset.id];
