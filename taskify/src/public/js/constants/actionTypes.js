@@ -6,6 +6,7 @@ const ActionTypes = {
   ADD_COLUMN: "addColumn",
   UPDATE_COLUMN_TITLE: "updateColumnTitle",
   DELETE_COLUMN: "deleteColumn",
+  SORT: "sort",
 };
 
 export default ActionTypes;

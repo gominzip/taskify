@@ -4,6 +4,8 @@ import columnStore from "../stores/ColumnStore.js";
 import Component from "../core/Component.js";
 import TaskEditForm from "./TaskEditForm.js";
 import ActionTypes from "../constants/actionTypes.js";
+import { SORT_TYPES } from "../constants/sortTypes.js";
+import sortStore from "../stores/SortStore.js";
 
 export default class Task extends Component {
   setup() {
@@ -55,7 +57,10 @@ export default class Task extends Component {
 
     const $taskItemWrapper = this.$target;
 
-    $taskItemWrapper.addEventListener("dragstart", this.handleDragStart);
+    $taskItemWrapper.addEventListener(
+      "dragstart",
+      this.handleDragStart.bind(this)
+    );
     $taskItemWrapper.addEventListener("dragend", this.handleDragEnd.bind(this));
   }
 
@@ -73,8 +78,17 @@ export default class Task extends Component {
   }
 
   handleDragStart(e) {
+    if (sortStore.getState().sortType !== SORT_TYPES.PRIORITY) {
+      e.preventDefault();
+      alert("중요도 순 정렬일 때만 드래그 앤 드롭이 가능합니다.");
+      return;
+    }
+
     e.target.style.opacity = "0.5";
     e.target.classList.add("dragging");
+    const offsetX = e.clientX - e.target.getBoundingClientRect().left;
+    const offsetY = e.clientY - e.target.getBoundingClientRect().top;
+    e.dataTransfer.setDragImage(e.target, offsetX, offsetY);
   }
 
   handleDragEnd(e) {

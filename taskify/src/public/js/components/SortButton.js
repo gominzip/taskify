@@ -1,6 +1,8 @@
 import Component from "../core/Component.js";
 import { SORT_TEXT, SORT_TYPES } from "../constants/sortTypes.js";
 import sortStore from "../stores/SortStore.js";
+import columnStore from "../stores/ColumnStore.js";
+import ActionTypes from "../constants/actionTypes.js";
 
 export default class SortButton extends Component {
   setup() {
@@ -35,5 +37,6 @@ export default class SortButton extends Component {
 
     this.setState({ currentSortTypeIndex: nextIndex });
     sortStore.setSortType(newSortType);
+    columnStore.updateColumnState(null, newSortType, ActionTypes.SORT);
   }
 }

@@ -1,4 +1,6 @@
+import { historyDummy } from "../apis/historyAPI.js";
 import Component from "../core/Component.js";
+import { generateHistoryHTML } from "../../utils/generateHistoryHTML.js";
 
 export default class HistoryModal extends Component {
   setup() {
@@ -17,7 +19,9 @@ export default class HistoryModal extends Component {
         </button>
       </div>
       <div class="histories">
-        아직 뭐가 없어요
+        ${historyDummy
+          .map((history) => generateHistoryHTML(history))
+          .join("")}
       </div>
       <div class="history-reset-wrapper">
         <button class="history-reset-btn">기록 전체 삭제</button>

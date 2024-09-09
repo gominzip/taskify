@@ -1,18 +1,86 @@
 import { handleAsync } from "../../utils/handleAsync.js";
+import { sortTasksByType } from "../../utils/sortUtil.js";
 import { getTask, updateTask } from "../apis/taskAPI.js";
 import columnStore from "../stores/ColumnStore.js";
 import Component from "../core/Component.js";
 import Task from "./Task.js";
 import ActionTypes from "../constants/actionTypes.js";
+import sortStore from "../stores/SortStore.js";
+import { SORT_TYPES } from "../constants/sortTypes.js";
 
 export default class TaskList extends Component {
   setup() {
     this.state = { ...this.props };
+    this.renderTasks();
+    sortStore.subscribe(this.handleSortChange.bind(this));
+  }
+
+  handleSortChange({ sortType }) {
+    this.sortTasks(sortType);
+
+    if (sortType === SORT_TYPES.PRIORITY) {
+      this.setDragAndDropEvents();
+    } else {
+      this.removeDragAndDropEvents();
+    }
+  }
+
+  sortTasks(sortType) {
+    const { tasks } = this.state;
+    const sortedTasks = sortTasksByType(tasks, sortType);
+    this.animateTaskSorting(sortedTasks);
+  }
+
+  animateTaskSorting(sortedTasks) {
+    const $taskList = this.$target;
+    const taskElements = Array.from($taskList.children);
+
+    const taskPositions = taskElements.reduce((acc, taskElement, index) => {
+      const taskId = taskElement.dataset.id;
+      if (taskId) {
+        acc[taskId] = { element: taskElement, index };
+      }
+      return acc;
+    }, {});
+
+    const newTaskOrder = sortedTasks
+      .map((task) => {
+        const position = taskPositions[task.id];
+        return position ? position.element : null;
+      })
+      .filter((element) => element !== null);
+
+    newTaskOrder.forEach((taskElement, newIndex) => {
+      const { index: currentIndex } = taskPositions[taskElement.dataset.id];
+
+      if (newIndex !== currentIndex) {
+        const offset =
+          (newIndex - currentIndex) * (taskElement.offsetHeight * 1.1);
+        taskElement.style.transform = `translateY(${offset}px)`;
+
+        taskElement.addEventListener(
+          "transitionend",
+          () => {
+            if (newTaskOrder.indexOf(taskElement) === newIndex) {
+              if (newIndex === taskElements.length - 1) newIndex++;
+              $taskList.insertBefore(
+                taskElement,
+                $taskList.children[newIndex] || null
+              );
+            }
+
+            taskElement.style.transform = "";
+          },
+          { once: true }
+        );
+      }
+    });
   }
 
   mounted() {
     this.renderTasks();
-    this.setDragAndDropEvents();
+    if (sortStore.getState().sortType === SORT_TYPES.PRIORITY)
+      this.setDragAndDropEvents();
   }
 
   renderTasks() {
@@ -24,9 +92,9 @@ export default class TaskList extends Component {
     tasks.forEach((task) => {
       const $taskContainer = document.createElement("div");
       $taskContainer.className = "task-item-wrapper";
+      $taskContainer.draggable = "true";
       $taskContainer.dataset.id = task.id;
       $taskContainer.dataset.column_id = column_id;
-      $taskContainer.draggable = "true";
       $taskList.appendChild($taskContainer);
 
       new Task($taskContainer, {
@@ -40,6 +108,13 @@ export default class TaskList extends Component {
 
     $taskList.addEventListener("dragover", this.handleDragOver.bind(this));
     $taskList.addEventListener("drop", this.handleDrop.bind(this));
+  }
+
+  removeDragAndDropEvents() {
+    const $taskList = this.$target;
+
+    $taskList.removeEventListener("dragover", this.handleDragOver.bind(this));
+    $taskList.removeEventListener("drop", this.handleDrop.bind(this));
   }
 
   handleDragOver(e) {

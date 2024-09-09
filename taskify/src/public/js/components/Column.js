@@ -149,6 +149,6 @@ export default class Column extends Component {
   async deleteColumn() {
     const column_id = this.state.id;
     await handleAsync(() => deleteColumn(column_id));
-    columnStore.updateColumnState(column_id, null, "deleteColumn");
+    columnStore.updateColumnState(column_id, null, ActionTypes.DELETE_COLUMN);
   }
 }

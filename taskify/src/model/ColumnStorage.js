@@ -28,7 +28,7 @@ class ColumnStorage {
     const column = rows[0];
 
     const [tasksRows] = await pool.query(
-      "SELECT * FROM tasks WHERE column_id = ? AND is_deleted = 0 ORDER BY task_order ASC",
+      "SELECT * FROM tasks WHERE column_id = ? AND is_deleted = 0 ORDER BY created_at ASC",
       [id]
     );
 
