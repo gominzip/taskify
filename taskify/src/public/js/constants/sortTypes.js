@@ -1,11 +1,11 @@
 export const SORT_TYPES = {
   CREATED_AT: "createdAt",
-  LATEST: "latest",
+  UPDATED_AT: "updatedAt",
   PRIORITY: "priority",
 };
 
 export const SORT_TEXT = {
   createdAt: "생성 순",
-  latest: "최신 순",
+  updatedAt: "최신 순",
   priority: "중요도 순",
 };

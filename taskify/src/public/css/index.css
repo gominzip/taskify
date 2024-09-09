@@ -87,7 +87,7 @@
   color: var(--text-default);
 }
 
-.histories{
+.histories {
   min-height: 10rem;
   display: flex;
   align-items: center;
@@ -271,6 +271,7 @@
 
 .task-item-wrapper {
   width: 100%;
+  transition: transform 0.3s ease;
 }
 
 .task-item {
