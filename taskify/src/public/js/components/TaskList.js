@@ -6,16 +6,22 @@ import Component from "../core/Component.js";
 import Task from "./Task.js";
 import ActionTypes from "../constants/actionTypes.js";
 import sortStore from "../stores/SortStore.js";
+import { SORT_TYPES } from "../constants/sortTypes.js";
 
 export default class TaskList extends Component {
   setup() {
     this.state = { ...this.props };
-    console.log(this.state);
     sortStore.subscribe(this.handleSortChange.bind(this));
   }
 
   handleSortChange({ sortType }) {
     this.sortTasks(sortType);
+
+    if (sortType === SORT_TYPES.PRIORITY) {
+      this.setDragAndDropEvents();
+    } else {
+      this.removeDragAndDropEvents();
+    }
   }
 
   sortTasks(sortType) {
@@ -68,7 +74,8 @@ export default class TaskList extends Component {
 
   mounted() {
     this.renderTasks();
-    this.setDragAndDropEvents();
+    if (sortStore.getState().sortType === SORT_TYPES.PRIORITY)
+      this.setDragAndDropEvents();
   }
 
   renderTasks() {
@@ -96,6 +103,13 @@ export default class TaskList extends Component {
 
     $taskList.addEventListener("dragover", this.handleDragOver.bind(this));
     $taskList.addEventListener("drop", this.handleDrop.bind(this));
+  }
+
+  removeDragAndDropEvents() {
+    const $taskList = this.$target;
+
+    $taskList.removeEventListener("dragover", this.handleDragOver.bind(this));
+    $taskList.removeEventListener("drop", this.handleDrop.bind(this));
   }
 
   handleDragOver(e) {
