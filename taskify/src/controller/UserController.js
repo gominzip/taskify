@@ -36,3 +36,20 @@ export const logout = (req, res) => {
     return res.status(200).json({ message: "로그아웃 성공" });
   });
 };
+
+export const checkLoggedIn = (req, res) => {
+  if (req.isAuthenticated()) {
+    res.status(200).json({ loggedIn: true });
+  } else {
+    res.status(200).json({ loggedIn: false });
+  }
+};
+
+export const getUserInfo = (req, res) => {
+  if (req.isAuthenticated()) {
+    const { password, ...user } = req.user;
+    res.status(200).json({ user });
+  } else {
+    res.status(401).json({ message: "사용자 인증되지 않음" });
+  }
+};
