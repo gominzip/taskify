@@ -42,6 +42,6 @@ export async function getUserInfo() {
     const response = await fetch("/user/info");
     if (!response.ok) throw new Error("사용자 정보 가져오기 실패");
     const data = await response.json();
-    return data;
+    return data.user;
   });
 }

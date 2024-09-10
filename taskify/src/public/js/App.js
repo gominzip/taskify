@@ -5,6 +5,8 @@ import Component from "./core/Component.js";
 import ColumnList from "./components/ColumnList.js";
 import Header from "./components/Header.js";
 import FAB from "./components/FAB.js";
+import { getUserInfo } from "./apis/userAPI.js";
+import userStore from "./stores/UserStore.js";
 
 export default class App extends Component {
   template() {
@@ -16,8 +18,14 @@ export default class App extends Component {
   }
 
   async mounted() {
+    await this.loadUserInfo();
     await this.loadColumns();
     this.renderAppLayout();
+  }
+
+  async loadUserInfo() {
+    const userInfo = await handleAsync(() => getUserInfo());
+    userStore.setUserInfo(userInfo);
   }
 
   async loadColumns() {
