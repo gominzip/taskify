@@ -1,12 +1,15 @@
 import { historyDummy } from "../apis/historyAPI.js";
 import Component from "../core/Component.js";
 import { generateHistoryHTML } from "../../utils/generateHistoryHTML.js";
+import ConfirmModal from "./ConfirmModal.js";
 
 export default class HistoryModal extends Component {
   setup() {
     this.state = {
       isOpen: this.props.isOpen || false,
     };
+
+    this.confirmModal = new ConfirmModal();
   }
 
   template() {
@@ -19,9 +22,7 @@ export default class HistoryModal extends Component {
         </button>
       </div>
       <div class="histories">
-        ${historyDummy
-          .map((history) => generateHistoryHTML(history))
-          .join("")}
+        ${historyDummy.map((history) => generateHistoryHTML(history)).join("")}
       </div>
       <div class="history-reset-wrapper">
         <button class="history-reset-btn">기록 전체 삭제</button>
@@ -31,6 +32,11 @@ export default class HistoryModal extends Component {
 
   setEvent() {
     this.addEvent("click", ".history-close-btn", this.close.bind(this));
+    this.addEvent(
+      "click",
+      ".history-reset-btn",
+      this.confirmResetHistory.bind(this)
+    );
   }
 
   open() {
@@ -50,5 +56,17 @@ export default class HistoryModal extends Component {
     } else {
       this.$target.classList.remove("open");
     }
+  }
+
+  confirmResetHistory() {
+    this.confirmModal.open(
+      "모든 사용자 활동 기록을 삭제할까요?",
+      "삭제",
+      this.resetHistory
+    );
+  }
+
+  async resetHistory() {
+    console.log("구현 예정");
   }
 }

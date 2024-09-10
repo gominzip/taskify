@@ -6,6 +6,7 @@ import TaskEditForm from "./TaskEditForm.js";
 import ActionTypes from "../constants/actionTypes.js";
 import { SORT_TYPES } from "../constants/sortTypes.js";
 import sortStore from "../stores/SortStore.js";
+import ConfirmModal from "./ConfirmModal.js";
 
 export default class Task extends Component {
   setup() {
@@ -13,6 +14,8 @@ export default class Task extends Component {
       ...this.props,
       isEditing: false,
     };
+
+    this.confirmModal = new ConfirmModal();
   }
 
   template() {
@@ -52,7 +55,11 @@ export default class Task extends Component {
   }
 
   setEvent() {
-    this.addEvent("click", ".task-remove-btn", this.deleteTask.bind(this));
+    this.addEvent(
+      "click",
+      ".task-remove-btn",
+      this.confirmDeleteTask.bind(this)
+    );
     this.addEvent("click", ".task-edit-btn", this.toggleEditMode.bind(this));
 
     const $taskItemWrapper = this.$target;
@@ -108,6 +115,14 @@ export default class Task extends Component {
       column_id,
       updatedTask,
       ActionTypes.UPDATE_TASK_CONTENT
+    );
+  }
+
+  confirmDeleteTask() {
+    this.confirmModal.open(
+      "선택한 카드를 삭제할까요?",
+      "삭제",
+      this.deleteTask.bind(this)
     );
   }
 

@@ -5,6 +5,9 @@ import Component from "./core/Component.js";
 import ColumnList from "./components/ColumnList.js";
 import Header from "./components/Header.js";
 import FAB from "./components/FAB.js";
+import { getUserInfo } from "./apis/userAPI.js";
+import userStore from "./stores/UserStore.js";
+import ConfirmModal from "./components/ConfirmModal.js";
 
 export default class App extends Component {
   template() {
@@ -12,12 +15,19 @@ export default class App extends Component {
       <header id="header-container"></header>
       <main id="task-board-container"></main>
       <section id="fab-container"></section>
+      <div id="modal-container"></div>
     `;
   }
 
   async mounted() {
+    await this.loadUserInfo();
     await this.loadColumns();
     this.renderAppLayout();
+  }
+
+  async loadUserInfo() {
+    const userInfo = await handleAsync(() => getUserInfo());
+    userStore.setUserInfo(userInfo);
   }
 
   async loadColumns() {
@@ -28,6 +38,7 @@ export default class App extends Component {
   }
 
   renderAppLayout() {
+    const $modalContainer = this.$target.querySelector("#modal-container");
     const $headerContainer = this.$target.querySelector("#header-container");
     const $taskBoardContainer = this.$target.querySelector(
       "#task-board-container"
@@ -36,6 +47,7 @@ export default class App extends Component {
 
     $taskBoardContainer.innerHTML = "";
 
+    new ConfirmModal($modalContainer);
     new Header($headerContainer);
     new ColumnList($taskBoardContainer);
     new FAB($fabContainer);

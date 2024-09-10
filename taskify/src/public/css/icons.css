@@ -28,6 +28,11 @@
   font-size: 1.6rem;
 }
 
+.logout-btn.material-symbols-outlined {
+  color: var(--text-default);
+  font-size: 1.6rem;
+}
+
 .task-add-btn.material-symbols-outlined:hover,
 .task-edit-btn.material-symbols-outlined:hover {
   color: var(--surface-brand);
