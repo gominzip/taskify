@@ -1,0 +1,63 @@
+@import url(theme.css);
+@import url(reset.css);
+@import url(global.css);
+
+body {
+  justify-content: center;
+}
+
+#login-form-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 90%;
+  gap: var(--number-400);
+}
+
+#title {
+  font: var(--display-bold-48);
+}
+
+#login-form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: var(--number-200);
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: var(--number-100);
+}
+
+label {
+  font: var(--display-bold-16);
+}
+
+input {
+  border: 1px solid var(--border-bord);
+  border-radius: var(--number-200);
+  font: var(--display-medium-16);
+  padding: var(--number-100);
+}
+
+button {
+  width: 9rem;
+  height: 4rem;
+  font: var(--display-bold-16);
+  color: var(--text-white-default);
+  background-color: var(--surface-brand);
+  border-radius: var(--number-100);
+  margin-top: var(--number-200);
+}
+
+#login-error {
+  height: var(--number-200);
+  font: var(--display-medium-14);
+  color: var(--text-danger);
+}
