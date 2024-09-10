@@ -1,5 +1,8 @@
+import { handleAsync } from "../../utils/handleAsync.js";
+import { logout } from "../apis/userAPI.js";
 import { SORT_TEXT } from "../constants/sortTypes.js";
 import Component from "../core/Component.js";
+import userStore from "../stores/UserStore.js";
 import HistoryModal from "./HistoryModal.js";
 import SortButton from "./SortButton.js";
 
@@ -13,12 +16,19 @@ export default class Header extends Component {
   }
 
   template() {
+    const { name } = userStore.getState().userInfo;
     return `
         <div class="header-left-content">
           <p>TASKIFY</p>
           <button class="sort-btn"></button>
         </div>
-        <button class="history-btn material-symbols-outlined">history</button>
+        <div class="header-right-content">
+          <div class="header-user-info">
+            <span class="header-user-name">${name} 님</span>
+            <button class="logout-btn material-symbols-outlined">logout</button>
+          </div>
+          <button class="history-btn material-symbols-outlined">history</button>
+        </div>
         <div class="history-modal"></div>
     `;
   }
@@ -31,6 +41,7 @@ export default class Header extends Component {
 
   setEvent() {
     this.addEvent("click", ".history-btn", this.toggleHistoryModal.bind(this));
+    this.addEvent("click", ".logout-btn", this.handleLogout);
   }
 
   setState(newState) {
@@ -69,6 +80,15 @@ export default class Header extends Component {
   updateModalVisibility() {
     if (this.historyModal) {
       this.historyModal.updateModalVisibility(this.state.isHistoryModalOpen);
+    }
+  }
+
+  async handleLogout() {
+    const confirmed = window.confirm("로그아웃 하시겠습니까?");
+
+    if (confirmed) {
+      await handleAsync(() => logout());
+      window.location.href = "/login";
     }
   }
 }

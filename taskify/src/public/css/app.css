@@ -40,6 +40,25 @@
   color: var(--text-bold);
 }
 
+.header-right-content {
+  display: flex;
+  align-items: center;
+  width: fit-content;
+  gap: 1.5rem;
+}
+
+.header-user-info {
+  display: flex;
+  align-items: center;
+  width: fit-content;
+  gap: var(--number-50);
+}
+
+.header-user-name{
+  color: var(--text-default);
+  font: var(--display-bold-14)
+}
+
 .history-modal {
   position: fixed;
   top: 6.4rem;

@@ -6,6 +6,7 @@ import Component from "../core/Component.js";
 import TaskAddForm from "./TaskAddForm.js";
 import TaskList from "./TaskList.js";
 import ActionTypes from "../constants/actionTypes.js";
+import userStore from "../stores/UserStore.js";
 
 export default class Column extends Component {
   setup() {
@@ -76,10 +77,11 @@ export default class Column extends Component {
   }
 
   saveNewTask(title, description) {
+    const { id } = userStore.getState().userInfo;
     this.addTask({
       title,
       description,
-      author_id: 2,
+      author_id: id,
     });
     this.hideTaskInputForm();
   }
