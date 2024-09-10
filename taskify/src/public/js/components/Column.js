@@ -7,11 +7,14 @@ import TaskAddForm from "./TaskAddForm.js";
 import TaskList from "./TaskList.js";
 import ActionTypes from "../constants/actionTypes.js";
 import userStore from "../stores/UserStore.js";
+import ConfirmModal from "./ConfirmModal.js";
 
 export default class Column extends Component {
   setup() {
     this.state = { ...this.props, isAddingTask: false };
     this.handleGlobalClickBound = this.handleGlobalClick.bind(this);
+
+    this.confirmModal = new ConfirmModal();
   }
 
   template() {
@@ -68,7 +71,7 @@ export default class Column extends Component {
 
   setEvent() {
     this.addEvent("click", ".task-add-btn", this.toggleTaskAddForm.bind(this));
-    this.addEvent("click", ".column-remove-btn", this.deleteColumn.bind(this));
+    this.addEvent("click", ".column-remove-btn", this.confirmDeleteColumn.bind(this));
     this.addEvent("dblclick", ".editable-title", this.editTitle.bind(this));
   }
 
@@ -145,6 +148,14 @@ export default class Column extends Component {
       column_id,
       updatedColumn,
       ActionTypes.UPDATE_COLUMN_TITLE
+    );
+  }
+
+  confirmDeleteColumn() {
+    this.confirmModal.open(
+      "선택한 컬럼을 삭제할까요?",
+      "삭제",
+      this.deleteColumn.bind(this)
     );
   }
 

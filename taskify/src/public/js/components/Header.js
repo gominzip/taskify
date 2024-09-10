@@ -3,6 +3,7 @@ import { logout } from "../apis/userAPI.js";
 import { SORT_TEXT } from "../constants/sortTypes.js";
 import Component from "../core/Component.js";
 import userStore from "../stores/UserStore.js";
+import ConfirmModal from "./ConfirmModal.js";
 import HistoryModal from "./HistoryModal.js";
 import SortButton from "./SortButton.js";
 
@@ -13,6 +14,7 @@ export default class Header extends Component {
     };
     this.historyModal = null;
     this.sortBtn = null;
+    this.confirmModal = new ConfirmModal();
   }
 
   template() {
@@ -41,7 +43,7 @@ export default class Header extends Component {
 
   setEvent() {
     this.addEvent("click", ".history-btn", this.toggleHistoryModal.bind(this));
-    this.addEvent("click", ".logout-btn", this.handleLogout);
+    this.addEvent("click", ".logout-btn", this.confirmLogout.bind(this));
   }
 
   setState(newState) {
@@ -83,12 +85,16 @@ export default class Header extends Component {
     }
   }
 
-  async handleLogout() {
-    const confirmed = window.confirm("로그아웃 하시겠습니까?");
+  confirmLogout() {
+    this.confirmModal.open(
+      "로그아웃 하시겠습니까?",
+      "로그아웃",
+      this.handleLogout.bind()
+    );
+  }
 
-    if (confirmed) {
-      await handleAsync(() => logout());
-      window.location.href = "/login";
-    }
+  async handleLogout() {
+    await handleAsync(() => logout());
+    window.location.href = "/login";
   }
 }
