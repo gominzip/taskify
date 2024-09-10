@@ -89,7 +89,7 @@ export default class Header extends Component {
     this.confirmModal.open(
       "로그아웃 하시겠습니까?",
       "로그아웃",
-      this.handleLogout.bind()
+      this.handleLogout
     );
   }
 
