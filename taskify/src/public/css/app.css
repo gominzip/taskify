@@ -6,7 +6,7 @@
   position: fixed;
   top: 0;
   left: 0;
-  z-index: 100;
+  z-index: var(--z-index-header);
   padding: 1rem 8rem 0rem 8rem;
   box-sizing: border-box;
   background-color: var(--surface-alt);
@@ -54,9 +54,9 @@
   gap: var(--number-50);
 }
 
-.header-user-name{
+.header-user-name {
   color: var(--text-default);
-  font: var(--display-bold-14)
+  font: var(--display-bold-14);
 }
 
 .history-modal {
@@ -73,7 +73,7 @@
   transition: right 0.3s ease-in-out;
   border-radius: var(--number-200);
   padding: var(--number-100);
-  z-index: 50;
+  z-index: var(--z-index-modal-history);
 }
 
 .history-modal.open {
@@ -403,4 +403,71 @@
 .task-content-author {
   font: var(--display-medium-12);
   color: var(--text-weak);
+}
+
+#modal-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: var(--z-index-modal-confirm);
+}
+
+.modal-content {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 40rem;
+  padding: var(--number-400) var(--number-300) var(--number-300)
+    var(--number-300);
+  gap: var(--number-300);
+  background-color: var(--surface-default);
+  border-radius: var(--number-100);
+  box-shadow: 0px 2px 8px 0px #6e809129;
+}
+
+.modal-text {
+  font: var(--display-medium-16);
+  color: var(--text-default);
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: space-around;
+  width: 90%;
+  gap: var(--number-100);
+}
+
+.modal-button {
+  width: 17.2rem;
+  height: 3.2rem;
+  padding: 0 var(--number-100);
+  border-radius: var(--number-100);
+  font: var(--display-bold-14);
+}
+
+.modal-cancel-btn {
+  background-color: var(--surface-alt);
+  color: var(--text-default);
+}
+
+.modal-delete-btn {
+  background-color: var(--surface-danger);
+  color: var(--text-white-default);
 }
