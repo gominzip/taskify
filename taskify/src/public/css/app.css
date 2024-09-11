@@ -424,6 +424,16 @@
   z-index: var(--z-index-modal-confirm);
 }
 
+.modal-open {
+  display: block;
+  opacity: 1;
+}
+
+.modal-hidden {
+  display: none;
+  opacity: 0;
+}
+
 .modal-content {
   position: fixed;
   top: 50%;
