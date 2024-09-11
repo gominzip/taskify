@@ -9,30 +9,29 @@ class ConfirmModal extends Component {
     }
     super($target, {});
     ConfirmModal.instance = this;
-    this.modalText = "안내 문구를 이렇게 표시합니다.";
-    this.confirmBtnText = "확인";
-    this.onDelete = null;
-    this.setup();
-    this.render();
-    this.setEvent();
   }
 
   setup() {
     this.state = {
       isOpen: false,
     };
+    this.modalText = "안내 문구를 이렇게 표시합니다.";
+    this.confirmBtnText = "확인";
+    this.onDelete = null;
   }
 
   template() {
     return `
-      <div class="modal-overlay" style="display: ${
-        this.state.isOpen ? "block" : "none"
+      <div class="modal-overlay ${
+        this.state.isOpen ? "modal-open" : "modal-hidden"
       }">
         <div class="modal-content">
           <p class="modal-text">${this.modalText}</p>
           <div class="modal-buttons">
             <button class="modal-button modal-cancel-btn">취소</button>
-            <button class="modal-button modal-delete-btn">${this.confirmBtnText}</button>
+            <button class="modal-button modal-delete-btn">${
+              this.confirmBtnText
+            }</button>
           </div>
         </div>
       </div>
