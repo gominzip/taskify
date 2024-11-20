@@ -1,0 +1,74 @@
+@import "./Pretendard.css";
+
+:root {
+  --font-primary: "Pretendard", sans-serif;
+
+  --bold-XL: normal 700 4.8rem var(--font-primary);
+  --bold-L: normal 700 2.4rem var(--font-primary);
+  --bold-M: normal 700 1.6rem var(--font-primary);
+  --bold-R: normal 700 1.4rem var(--font-primary);
+  --bold-S: normal 700 1.2rem var(--font-primary);
+  --medium-M: normal 500 1.6rem/2.2rem var(--font-primary);
+  --medium-R: normal 500 1.4rem var(--font-primary);
+  --medium-S: normal 500 1.2rem var(--font-primary);
+
+  --grayscale-50: #fefefe;
+  --grayscale-100: #f7f7fc;
+  --grayscale-200: #eff0f6;
+  --grayscale-300: #d9dbe9;
+  --grayscale-400: #bec1d5;
+  --grayscale-500: #a0a3bd;
+  --grayscale-600: #6e7191;
+  --grayscale-700: #4e4b66;
+  --grayscale-800: #2a2a44;
+  --grayscale-900: #14142b;
+  --accent-blue: #007aff;
+  --accent-red: #ff3b30;
+
+  --number-50: 4px;
+  --number-100: 8px;
+  --number-200: 16px;
+  --number-300: 24px;
+  --number-400: 32px;
+  --number-500: 40px;
+  --number-600: 48px;
+  --number-700: 56px;
+  --number-800: 64px;
+  --number-900: 72px;
+
+  --shadow-nomal: 0px 1px 4px 0px #6e80913d;
+  --shadow-up: 0px 2px 8px 0px #6e809129;
+  --shadow-floating: 0px 16px 16px 0px #6e80913d;
+
+  --display-bold-48: var(--bold-XL);
+  --display-bold-24: var(--bold-L);
+  --display-bold-16: var(--bold-M);
+  --display-bold-14: var(--bold-R);
+  --display-bold-12: var(--bold-S);
+  --display-medium-16: var(--medium-M);
+  --display-medium-14: var(--medium-R);
+  --display-medium-12: var(--medium-S);
+  --selected-bold-16: var(--bold-M);
+  --selected-bold-14: var(--bold-R);
+  --available-medium-16: var(--medium-M);
+  --available-medium-14: var(--medium-R);
+
+  --text-strong: var(--grayscale-900);
+  --text-bold: var(--grayscale-700);
+  --text-default: var(--grayscale-600);
+  --text-weak: var(--grayscale-500);
+  --text-white-default: var(--grayscale-50);
+  --text-white-weak: var(--grayscale-100);
+  --text-brand: var(--accent-blue);
+  --text-danger: var(--accent-red);
+  --surface-default: var(--grayscale-50);
+  --surface-alt: var(--grayscale-100);
+  --surface-brand: var(--accent-blue);
+  --surface-danger: var(--accent-red);
+  --border-default: var(--grayscale-200);
+  --border-bord: var(--grayscale-400);
+
+  --z-index-header: 100;
+  --z-index-modal-history: 200;
+  --z-index-modal-confirm: 300;
+}

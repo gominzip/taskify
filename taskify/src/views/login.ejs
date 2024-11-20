@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/css/login.css" />
+    <title>Taskify J009</title>
+  </head>
+  <body>
+    <div id="login-form-container">
+      <div id="title">TASKIFY</div>
+      <form id="login-form">
+        <div class="form-field">
+          <label for="username">User Name</label>
+          <input type="text" id="username" name="username" required />
+        </div>
+        <div class="form-field">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" required />
+        </div>
+        <button type="submit">Login</button>
+        <div id="login-error"></div>
+      </form>
+    </div>
+    <script src="/js/login.js" type="module"></script>
+  </body>
+</html>
