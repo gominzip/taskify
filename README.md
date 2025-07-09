@@ -1,44 +1,74 @@
-# web-p1-taskify
+# 🗂️ Taskify
 
-2024 부스트캠프 웹 모바일 9기 멤버십 웹 풀스택 프로젝트 1 태스키파이
+Vanilla JS 환경에서 컴포넌트 기반 설계 및 상태 관리 학습을 위해 제작한 간단한 Kanban Task 관리 애플리케이션입니다.
 
-## 주간 계획서 📝 (J009 고민지)
+## 🚀 프로젝트 구조
+```
+taskify/
+├── bin/                  # 실행 및 서버 구동 스크립트
+└── src/
+    ├── config/           # 환경 및 DB 설정
+    ├── controller/       # 요청별 컨트롤러
+    ├── model/            # DB 스키마 및 모델
+    ├── public/
+    │   ├── css/          # 정적 CSS 파일
+    │   ├── img/          # 이미지
+    │   └── js/
+    │       ├── apis/         # API 통신 모듈
+    │       ├── components/  # 화면별 컴포넌트
+    │       ├── constants/   # 상수
+    │       ├── core/        # 웹 컴포넌트 기반 구조의 핵심 로직
+    │       │   ├── Component.js
+    │       │   └── Store.js
+    │       ├── stores/      # 전역 상태 관리
+    │       ├── App.js       # 메인 App 컴포넌트
+    │       ├── login.js     # 로그인 진입 파일
+    │       └── main.js      # 메인 페이지 진입 파일
+    ├── routes/           # API/페이지 라우팅
+    ├── utils/            # 유틸리티 함수
+    └── views/            # 템플릿 뷰 파일
 
-### Week1
+```
 
-| Day | Plan                                                   | FE                                       | BE                        |
-| --- | ------------------------------------------------------ | ---------------------------------------- | ------------------------- |
-| 1   | 요구사항 확인 및 기능 명세로 정리 + 프로젝트 기초 세팅 | 기본 레이아웃 구축                       | express 서버 구축         |
-| 2   | 데이터 스키마 및 클래스 설계 시작                      | 필요 클래스 설계 (Column, Task, History) | Mock 데이터 스키마 설계   |
-| 3   | 핵심 클래스 컴포넌트 구현 시작                         | 컴포넌트 클래스 구현                     |                           |
-| 4   | api 설계 시작                                          | 컴포넌트 클래스 구현                     | api 명세 작성 & CRUD 설계 |
-| 5   | api 구현 시작                                          | 컴포넌트 클래스 구현                     | 우선순위에 따라 api 구현  |
+## 🛠️ 주요 기능
+- Task 생성/조회/수정/삭제
+- Kanban Board Drag & Drop 상태 변경
+- 로그인/세션 기반 인증
+- Vanilla JS 환경에서 컴포넌트 기반 UI 설계
+- 자체 구현한 전역 상태 관리(Store) 적용
+- RESTful API 연동
 
-- 다른 프로젝트도 병행 중이기에 주말까지 포함해 작성한 계획을 수행할 예정
+## ⚙️ 핵심 기술: core/Component.js
 
-### Week2
+Taskify는 Vanilla JS 환경에서 컴포넌트 기반 아키텍처를 직접 구현하여 적용합니다.
 
-| Day | Plan             | FE                              | BE                           |
-| --- | ---------------- | ------------------------------- | ---------------------------- |
-| 6   | MySQL 연결       |                                 | MySQL 연결 및 CRUD 로직 정리 |
-| 7   | FE DOM 구조 설계 | 확장성을 고려해 DOM 클래스 설계 |                              |
-| 8   | FE 구현          | 화면 구성 및 fetch로 연결       |                              |
-| 9   | 기능 구현        | 화면 구성 및 fetch로 연결       | history api 구현             |
+core/Component.js는 다음과 같은 기능을 제공합니다:
+- setup(): 초기 state 설정
+- render(): template()으로 HTML 렌더링 및 mounted() 실행
+- setState(): 상태 업데이트 및 자동 렌더링
+- addEvent(): Event Delegation 기반 이벤트 핸들링
 
-### Week3
+```js
+export default class Component {
+  constructor($target, props) { ... }
+  setup() { }
+  template() { return ""; }
+  render() { ... }
+  mounted() { }
+  setEvent() { }
+  setState(newState) { ... }
+  addEvent(eventType, selector, callback) { ... }
+}
+```
+모든 컴포넌트들은 해당 컴포넌트를 상속받아 사용합니다.
 
-| Day | Plan         | FE                          | BE                                               |
-| --- | ------------ | --------------------------- | ------------------------------------------------ |
-| 11  | FE api 연결  | 테스크 추가 및 편집 구현    |                                                  |
-| 12  | FE api 연결  | 드래그앤드랍 순서 변경 구현 |                                                  |
-| 13  | BE 기능 추가 |                             | history 및 로그인 기능 설계, ERD와 API 문서 수정 |
-| 14  | BE 기능 추가 |                             | history 및 로그인, 배포 구현                     |
+React처럼 상태 기반으로 화면을 업데이트하며, 라이브러리 없이 상태 변화 → UI 반영 → 이벤트 위임까지 직접 구현 및 학습할 수 있습니다.
 
-### Week4
-
-| Day | Plan      | FE                                          | BE                                  |
-| --- | --------- | ------------------------------------------- | ----------------------------------- |
-| 16  | 기능 구현 | 정렬 애니메이션 구현, 히스토리 UI 구현 |                                     |
-| 17  | 기능 구현 | 로그인, 히스토리 UI 구현                    | 히스토리 업데이트 구현, 로그인 구현 |
-| 18  | 기능 구현 | 로그인 연결, Undo Redo 구현                 |                                     |
-| 19  | 리팩토링  | 구조 리팩토링                               | 구조 리팩토링                       |
+## ⚡ 설치 및 실행
+```
+git clone <repo-url>
+cd taskify
+npm install
+npm start
+```
+`http://localhost:3000` 접속 후 사용 가능합니다.
